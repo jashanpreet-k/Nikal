@@ -1,0 +1,35 @@
+{
+  "name": "nikal",
+  "version": "0.1.0",
+  "description": "Your cue to step outside — a local Mastra agent for Gwalior",
+  "type": "module",
+  "license": "MIT",
+  "bin": { "nikal": "dist/cli.js" },
+  "files": ["dist", "data", "docs", "scripts/memory-demo.mjs", "README.md", "SETUP.md", "LICENSE", ".env.example"],
+  "engines": { "node": ">=22.13.0" },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "dev": "node --import tsx src/cli.ts",
+    "demo": "node dist/cli.js --fixture --no-model",
+    "demo:memory": "node scripts/memory-demo.mjs",
+    "studio": "MASTRA_TELEMETRY_DISABLED=1 mastra dev",
+    "check": "npm run typecheck && npm run build && npm test",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "3.0.67",
+    "@mastra/core": "1.75.0",
+    "@mastra/libsql": "1.25.1",
+    "@mastra/memory": "1.36.0",
+    "dotenv": "17.3.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "mastra": "1.33.0",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}

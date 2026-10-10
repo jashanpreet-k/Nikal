@@ -1,0 +1,4 @@
+{
+  "_comment": "EMPTY BY DESIGN. Add only parks or gardens you have personally verified. Each place must have id (curated/your-unique-slug), name, kind (park or garden), lat and lon (WGS84 decimals), source (public HTTPS reference), and verifiedAt (YYYY-MM-DD). Distances are computed from the saved start; only places within the saved radius are used. This list is a curated fallback, never live Overpass data. Do not add sample or invented places.",
+  "places": []
+}

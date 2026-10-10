@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.nikal/
+.mastra/
+# Local retrieval caches, including custom data-directory layouts.
+cache/
+caches/
+.cache/
+*.db
+*.db-*
+*.sqlite*
+.DS_Store
+*.log
+coverage/
