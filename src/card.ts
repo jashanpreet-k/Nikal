@@ -1,5 +1,6 @@
 import { clean, displayDate, displayTime, type Context } from './domain.js';
 import { unconfirmedLeadCandidates } from './leads.js';
+import { explainTodayRejection } from './recommendation.js';
 
 const explanations = {
   cooler: 'Lowest forecast temperature among comfortable hours.',
@@ -36,6 +37,10 @@ export function formatCard(context: Context): string {
     const hour = context.candidates?.find(hour => hour.id === context.decision!.timeId);
     if (!hour) throw new Error('Cannot render an unvalidated time');
     const place = context.places?.places.find(place => place.id === context.decision!.placeId);
+    // Rollover only: say why today's remaining hourly slots were skipped, from this run's own facts.
+    const whyNotToday = context.recommendationDay === 'tomorrow' && context.conditions
+      ? explainTodayRejection(context.conditions.hours, p, context.now) : null;
+    if (whyNotToday) lines.push(whyNotToday);
     lines.push(context.recommendationDay === 'tomorrow'
       ? `Nothing suitable left today. Tomorrow ${displayTime(hour.time)} IST (${displayDate(hour.time)}) looks best.`
       : `Go at ${displayTime(hour.time)} IST (${displayDate(hour.time)}).`);
