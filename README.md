@@ -51,6 +51,8 @@ nikal --fixture --no-model      # fully offline, synthetic deterministic demo
 nikal --json                   # inspect workflow inputs/results instead of the card
 ```
 
+In an interactive terminal the CLI shows a brief progress note while it works and prints the answer line in bold. The card's text is unchanged: piped output and `--json` are never styled, and `NO_COLOR=1` turns the bold off.
+
 The fixed offline fixture clock is **10 October 2026, 6:30 AM IST**. Its forecast and “Demo Green Park / Demo Quiet Garden” are invented test data, never presented as a live forecast or real destinations. A default deterministic fixture card includes:
 
 ```text
@@ -64,9 +66,9 @@ Forecast US AQI 45 · 31°C · sunset 6:00 PM.
 Close this tab. Go outside.
 ```
 
-Nikal first evaluates all remaining daylight hours today. If none passes the saved comfort filters, it evaluates the whole next IST day and explicitly says **“Nothing suitable left today. Tomorrow … looks best.”** This deliberately extends the original 12-hour horizon; an early-morning run can also consider a late-today window more than 12 hours away. If both days lack qualifying data, the card says **“No suitable daylight window today or tomorrow.”** The model is skipped when no hour qualifies or a necessary forecast API fails.
+Nikal first evaluates all remaining daylight hours today. If none passes the saved comfort filters, it evaluates the whole next IST day and explicitly says **“Nothing suitable left today. Tomorrow … looks best.”** On that rollover the card adds one line saying why no remaining daylight hourly slot passed today, for example **“No remaining daylight hourly slot passes today: forecast AQI at 5 PM is 110, above your limit of 100.”** The line comes from that run's own forecast hours and saved limits, with no extra request and no model text. It lists each reason with its own hours, reports a missing reading as missing, and says so when no hourly slot is left before the daylight cutoff. This deliberately extends the original 12-hour horizon; an early-morning run can also consider a late-today window more than 12 hours away. If both days lack qualifying data, the card says **“No suitable daylight window today or tomorrow.”** The model is skipped when no hour qualifies or a necessary forecast API fails.
 
-The latest check on **11 October 2026** passed type-checking, build and **106 tests**, with zero failures or skips. Automated model/API payloads are mocked or synthetic; persistence uses genuine SQLite. These checks are separate from actual Qwen inference and live API evidence.
+The latest recorded check on **11 October 2026 at 5:38 PM IST** passed type-checking, build and **119 tests**, with zero failures or skips. It covers the rejection-explanation and terminal-presentation changes; the recorded GIF and screenshots predate both and show neither. Automated model/API payloads are mocked or synthetic; persistence uses genuine SQLite. These checks are separate from actual Qwen inference and live API evidence.
 
 Actual Qwen chat called `savePreferences`, completed successfully, and persisted **30°C + morning**; a separate CLI process retrieved those values. The recorded synthetic-facts demo used real Qwen selection on attempt 1: **5 PM → chat saves 30°C/morning → separate-process retrieval → 7 AM**.
 
@@ -265,7 +267,7 @@ NIKAL_SKIP_DOTENV=1 npm run demo:memory
 NIKAL_SKIP_DOTENV=1 npm pack --dry-run
 ```
 
-The **106 passing tests** cover timestamp joins, rollover, model/lead-ID validation, bounded repair, Overpass recovery, event corroboration, configurable-query privacy/cache behavior, parallel retrieval and transactional chat commit/discard behavior. Model/API responses in automated tests are mocks or synthetic inputs; persistence uses genuine SQLite and separate-process fixtures. Actual Qwen chat/selection and recorded live retrieval are documented separately. See the verification report for historical dependency advisories; no destructive `npm audit fix --force` downgrade was applied.
+The latest recorded gate's **119 passing tests** cover timestamp joins, rollover and rejection explanations, terminal presentation, model/lead-ID validation, bounded repair, Overpass recovery, event corroboration, configurable-query privacy/cache behavior, parallel retrieval and transactional chat commit/discard behavior. Model/API responses in automated tests are mocks or synthetic inputs; persistence uses genuine SQLite and separate-process fixtures. Actual Qwen chat/selection and recorded live retrieval are documented separately. See the verification report for historical dependency advisories; no destructive `npm audit fix --force` downgrade was applied.
 
 ## Attribution and licenses
 

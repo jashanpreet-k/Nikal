@@ -471,3 +471,123 @@ The only keyed SerpApi workflow evidence remains the earlier demo log `06-live.t
 - An outdoor trial, photo and account of it remain with the author.
 
 VHS and ttyd were installed through Homebrew for the recording. A headless-Chrome driver was installed in a temporary directory outside the repository for the Studio capture.
+
+
+## Today-rejection line on tomorrow rollover — 11 October 2026, 5:03 PM IST
+
+Implemented by the coding agent (Claude Code) as the one runtime change the author authorized for this task. **Everything below is mocked or synthetic evidence. No live API, real-model or SerpApi run was made for this change**, and none is claimed. `.env` was not read, saved preferences were not touched, and no dependency was added. Nothing was committed or pushed when this was written.
+
+### What changed
+
+- `src/recommendation.ts`: new `explainTodayRejection(hours, preferences, now)`. It takes the same forecast hours, saved preferences and clock that `selectDay` used and returns one sentence, or `null`. `candidates`, `selectDay`, `validateDecision` and `fallback` are untouched; the diff to that file is one widened import and the new function.
+- `src/card.ts`: when the card rolls over to tomorrow, that sentence is printed directly above the existing “Nothing suitable left today. Tomorrow … looks best.” line. No other line moves or changes.
+
+Thresholds, preference validation, hourly-slot rules, the daylight rule and model behaviour are unchanged. No extra request is made and no model text is used.
+
+### Behaviour
+
+- Only remaining hourly slots inside the daylight rule are explained. Each reason is listed with its own hours and values, so one reason is never presented as rejecting every slot.
+- A missing reading is reported as missing, by name. It is never given a value or compared with a limit.
+- When no hourly slot is left before the daylight cutoff, the line says so and quotes the sunset when one is known.
+- A saved morning or evening preference is reported as a reason of its own.
+- No line is printed when a slot passes today, when the forecast failed, or when neither day has a window.
+- If a remaining slot shows no rejection at all, the function returns `null` and prints nothing.
+
+### Automated gate
+
+`NIKAL_SKIP_DOTENV=1 npm run check` passed at 5:03 PM IST: type-checking, production build and **114 tests, 114 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo**. That is the earlier 106 plus 8 new tests in `tests/today-rejection.test.ts`.
+
+The first run of the new file alone had one failure. It was a wrong expectation in the new test, which assumed 7 AM where the unchanged deterministic fallback picks the cooler 8 AM slot. The test was corrected; no runtime code changed because of it.
+
+The 8 new tests, all on synthetic readings:
+
+1. AQI rejection, including a saved non-default limit and a post-cutoff slot that must not be cited.
+2. Other thresholds: temperature, UV index and rain chance.
+3. Mixed reasons across hours, a many-slot summary, and a saved period preference beside a threshold.
+4. Missing readings, including a missing sunset and a mix of missing and over-limit slots.
+5. No remaining daylight hourly slot, with and without a known sunset.
+6. No line when a slot passes today, on forecast failure, or with no window.
+7. The real Mastra workflow with **mocked retrieval tools, no model and an isolated SQLite file**: the tomorrow candidates, decision and fact lines match the unchanged selection, and the card differs from the same facts rendered without the line by that one line only.
+8. A cross-check of 13,500 synthetic single-slot cases against the unchanged `candidates()` filter: an eligible slot yields no line, and every ineligible slot yields a stated reason.
+
+### Example card — synthetic input, not a forecast
+
+Rendered through the real `selectDay`, `fallback` and `formatCard` from invented hours with the clock set to 3:17 PM. The header reads “API forecast” only because the synthetic context is not marked as a fixture. No API or model was called.
+
+```text
+NIKAL — Your cue to step outside
+Gwalior · API forecast · Deterministic fallback
+Approximate Gwalior city centre; not your home
+Remembered: ≤32°C · any · 3 km radius · AQI ≤100
+Places unavailable; no usable cache or curated fallback.
+No remaining daylight hourly slot passes today: forecast AQI is above your limit of 100 at 4 PM (108) and 5 PM (120); temperature at 4 PM is 32.6°C, above your limit of 32°C.
+Nothing suitable left today. Tomorrow 7:00 AM IST (11 Oct) looks best.
+Forecast US AQI 87 · 25°C · sunset 5:52 PM.
+Rain 0% · UV 0.5 · PM2.5 28.7 µg/m³.
+Places unavailable within your radius.
+Fits your saved comfort filters.
+No verified event found.
+Model disabled with --no-model; no AI inference performed.
+Comfort filters, not medical guarantees. OSM access, hours and safety unverified.
+Close this tab. Go outside.
+```
+
+With the clock at 5:40 PM and only post-cutoff slots left, the same synthetic setup prints “No hourly slot remains today before the daylight cutoff, 30 minutes before the 5:52 PM sunset.”
+
+### Limitations
+
+- The line is one sentence, but with two or more reasons it is long and wraps in a narrow terminal.
+- It explains hourly slots inside the daylight rule. Slots before sunrise or after the cutoff are not listed individually.
+- The offline `--fixture` demo has no tomorrow hours, so it never rolls over and never shows this line.
+- `README.md` and `SETUP.md` were not updated in this task. They still state 106 tests and do not describe the new line.
+
+
+## Terminal progress note and bold answer line — 11 October 2026, 5:38 PM IST
+
+Implemented by the coding agent (Claude Code) after the author chose this option from a short list of usability improvements. **This is a presentation-only change, verified with mocked, synthetic and offline-fixture evidence. No live API or real-model run was made for it**, and none is claimed. `.env` was not read, saved preferences were not touched, no dependency was added, and nothing was committed or pushed when this was written.
+
+### What changed
+
+- `src/terminal.ts` (new): `progressNote`, `highlightAnswer` and `useStyle`. They add a transient note and bold one line; they do not build or alter card text.
+- `src/cli.ts`: the recommendation run prints “Checking conditions and choosing a time…” to an interactive stderr while the workflow runs, and `nikal chat` prints “Asking the local model…”. The note is erased before the result prints. On an interactive stdout the card's answer line is wrapped in bold. `--help` gained two lines describing this.
+
+`src/card.ts`, the workflow, thresholds, validation and model behaviour are untouched by this change. The run still calls the same `run.start`; no Mastra internal API is used, so the note does not track individual workflow steps.
+
+### Behaviour
+
+- The answer line is one of four card lines: go today, go tomorrow, no window, or no forecast. Exactly one line is bold per card.
+- Removing the styling gives back the card text exactly. Piped output and `--json` contain no styling and no note.
+- `NO_COLOR=1` and `TERM=dumb` turn the bold off. A dumb terminal gets the note on its own line, since it cannot erase one.
+- Retrieved text cannot become the bold line, because such text only appears behind fixed prefixes.
+
+### Automated gate
+
+`NIKAL_SKIP_DOTENV=1 npm run check` passed at 5:38 PM IST on its first run: type-checking, production build and **119 tests, 119 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo**. That is the earlier 114 plus 5 new tests in `tests/terminal.test.ts`:
+
+1. Exactly the answer line is bold on today, tomorrow, no-window and forecast-failure cards, and the text is unchanged once styling is removed. The rollover reason line stays plain.
+2. A synthetic place named like an answer line is not highlighted.
+3. Styling is off when the stream is not a terminal, with `NO_COLOR`, or on a dumb terminal.
+4. The note is written only to an interactive stream and erased afterwards.
+5. The compiled CLI on the **offline synthetic fixture with the model disabled** prints the plain card when piped: no styling, empty stderr, identical to the card in `--json`.
+
+### Pseudo-terminal check — offline synthetic fixture, model disabled
+
+The compiled CLI was run three times as `--fixture --no-model` on an isolated profile: inside a pseudo-terminal (`script`), again there with `NO_COLOR=1`, and once piped. The pseudo-terminal output showed the note, a carriage return and erase-line sequence, then the card with only “Go at 5:00 PM IST (10 Oct).” wrapped in bold. With `NO_COLOR=1` the note remained and the bold was gone. Piped output was the plain card. These runs use invented fixture data and no model; they are not a forecast and not a real-model test.
+
+### Limitations
+
+- The note is a single static sentence. It does not say which stage is running.
+- `nikal doctor` and `nikal prefs` are unchanged and show no note.
+- The recorded GIF and screenshots predate this change and show neither the note nor the bold line.
+- The published DEV post still cites the 5:03 PM gate of 114 tests.
+
+
+## Publication of the rejection line and terminal presentation — 11 October 2026, 5:58 PM IST
+
+The author reviewed both changes and authorized committing and pushing them. This entry is committed together with them.
+
+- **Gate not re-run.** No file under `src/`, `tests/` or `data/`, and no package or TypeScript configuration file, changed after the 5:38 PM IST gate. That gate's result therefore covers the committed source: type-checking, build and **119 tests, 119 pass**. The check was made by file modification time.
+- **Committed:** the rejection explanation (`src/recommendation.ts`, `src/card.ts`, `tests/today-rejection.test.ts`), the terminal presentation (`src/terminal.ts`, `src/cli.ts`, `tests/terminal.test.ts`), the matching README and SETUP sentences, and the two entries above.
+- **No new evidence.** No live API, real-model or SerpApi run was made for publication. Both changes remain verified by automated tests on synthetic readings and by offline-fixture checks only. The recorded GIF and screenshots predate both changes and show neither.
+
+Two statements in the entries above are now out of date and are kept as written: both say nothing had been committed, and the 5:03 PM entry says `README.md` and `SETUP.md` still state 106 tests. Those files now cite the 5:38 PM gate of 119 tests.
