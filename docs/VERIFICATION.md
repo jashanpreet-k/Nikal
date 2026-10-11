@@ -591,3 +591,44 @@ The author reviewed both changes and authorized committing and pushing them. Thi
 - **No new evidence.** No live API, real-model or SerpApi run was made for publication. Both changes remain verified by automated tests on synthetic readings and by offline-fixture checks only. The recorded GIF and screenshots predate both changes and show neither.
 
 Two statements in the entries above are now out of date and are kept as written: both say nothing had been committed, and the 5:03 PM entry says `README.md` and `SETUP.md` still state 106 tests. Those files now cite the 5:38 PM gate of 119 tests.
+
+
+## Project audit and clearer CLI error messages — 11 October 2026, 6:42–6:50 PM IST
+
+Run by the coding agent (Claude Code) at the author's request. The author then authorized the fixes below and committing and pushing them with the pending documentation. **No live API, real-model or SerpApi run was made.** `.env` was not read.
+
+### Read-only audit, 6:42 PM IST
+
+- **Local gate:** `NIKAL_SKIP_DOTENV=1 npm run check` passed with 119 tests.
+- **Public repository:** a clean clone of `main` at `a86ee27` passed the same check, 119 of 119.
+- **Tracked files:** no `.env`, database, cache, recording or build output is tracked, and `.env` was never committed. A scan found no key-like assignment, home path or email address in tracked files.
+- **Links:** all 29 links in the live DEV post and all 18 in the public README returned 200, and every relative README link points at an existing file.
+- **Without Ollama:** the compiled CLI on the offline fixture, pointed at a closed loopback port, still printed a card labelled `Deterministic fallback`.
+- **Dependency advisories** (`npm audit`, read-only query): 7 moderate in runtime dependencies; 14 including development dependencies, of which 8 moderate and 6 high. None was changed.
+
+The audit found two public README statements that were out of date, the Overpass timeout (8 seconds; the code uses 15) and the claim that the committed post draft matched the live post. Both are corrected in the commit that carries this entry.
+
+### Two error-message fixes
+
+- `src/cli.ts`: `nikal prefs set` with an out-of-range or mistyped value printed raw validation JSON. It now prints one plain sentence per problem, for example “--radius must be at most 3 km.” The limit in the sentence is taken from the validation issue itself. Reading corrupt saved memory still fails as before.
+- `src/agent.ts`, `src/doctor.ts`: with Ollama not running, `nikal doctor` answered “run nikal doctor”. A refused connection now reads “Ollama is not reachable; start the Ollama app or run ollama serve, then try again.”, on the card as well, and doctor's generic failure points at the README debugging section.
+
+Thresholds, the card's other text, the workflow and model behaviour are unchanged.
+
+### Automated gate
+
+`NIKAL_SKIP_DOTENV=1 npm run check` passed at 6:50 PM IST: type-checking, production build and **122 tests, 122 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo**. That is the earlier 119 plus 3 new tests in `tests/cli-messages.test.ts`.
+
+Two earlier runs of the new file each had one failure. Both were wrong expectations in the new test, not runtime defects: Node's argument parser needs `--lon=-200` for a value that starts with a dash, and two problems are reported in the validator's field order. The test was corrected; the runtime code was not changed for either.
+
+The 3 new tests run the compiled CLI on isolated profiles with dotenv disabled:
+
+1. Nine mistyped preference values each give exactly one plain sentence and exit code 1, two problems at once are both named, nothing invalid is saved, and a valid value still saves.
+2. `modelFailure` names an unreachable Ollama and keeps its wording for timeouts, a missing model and rejected output.
+3. With Ollama pointed at a closed loopback port, `nikal doctor` says to start Ollama and never says “run nikal doctor”, and the **offline synthetic fixture** card still prints as a labelled deterministic fallback.
+
+### Limitations
+
+- A value that starts with a dash must be typed as `--lon=-78.2`. Node's own parser reports this; its multi-line message is printed with the line breaks removed.
+- The recorded GIF and screenshots predate these messages.
+- Only `prefs set` input is covered. Other validation failures, such as corrupt saved memory, still print the validator's raw output.

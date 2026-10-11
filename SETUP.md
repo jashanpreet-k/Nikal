@@ -166,7 +166,7 @@ Both use explicitly labeled development coordinates. The first uses synthetic fa
 
 ## Verified results and remaining submission material
 
-The latest recorded gate on **11 October 2026 at 5:38 PM IST** passed type-checking, build and **119 tests**, zero failures/skips, with `NIKAL_SKIP_DOTENV=1`. This covers the rejection-explanation and terminal-presentation changes; the recorded GIF and screenshots predate both. Automated model/API cases use mocks or synthetic facts; memory uses actual isolated SQLite.
+The latest recorded gate on **11 October 2026 at 6:50 PM IST** passed type-checking, build and **122 tests**, zero failures/skips, with `NIKAL_SKIP_DOTENV=1`. This covers the rejection-explanation, terminal-presentation and error-message changes; the recorded GIF and screenshots predate all three. Automated model/API cases use mocks or synthetic facts; memory uses actual isolated SQLite.
 
 Actual local Qwen chat called the save tool and committed **30°C + morning**, retrieved by a separate CLI process. The recorded real-model fixture demo selected **5 PM → 7 AM** across those saved preferences; its weather and places are synthetic. Reviewed live demo logs separately record first-attempt local AI, live weather/AQI/Overpass and three live unconfirmed search leads, with zero corroborated events and null lead selection. Earlier failed mirrors, no-key skips and HTTP 401 remain separate historical evidence in [docs/VERIFICATION.md](docs/VERIFICATION.md).
 
