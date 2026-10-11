@@ -76,12 +76,14 @@ Mastra provides schema-typed tools, executable workflow steps with parallel retr
 
 ```text
 Successful recommendation path (reads saved preferences):
-Mastra Memory → Forecast → [Places + Search in parallel] → Join
-             → Comfort filters → Local Qwen agent → Deterministic validation → Card
+Mastra Memory → Forecast → [Places + Search in parallel]
+             → Join → Comfort filters → Local Qwen agent
+             → Deterministic validation → Card
 
 Preference chat (separate write path):
-Chat → savePreferences (stage patch) → Successful generation
-     → Validate merged preferences → Persistent Mastra Memory (LibSQL/SQLite)
+Chat → savePreferences (stage patch)
+     → Successful generation → Validate merged preferences
+     → Persistent Mastra Memory (LibSQL/SQLite)
 ```
 
 Stable resource/thread IDs preserve preferences across CLI processes. The chat tool stages a validated patch; the application saves it only after successful generation. Failed or aborted generation discards staged writes. Normal recommendations use read-only memory and disabled model tool calls.
