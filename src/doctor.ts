@@ -50,5 +50,5 @@ export async function doctor(testTools = false): Promise<boolean> {
     const result = z.object({ ok: z.literal(true) }).parse(JSON.parse(response.text));
     console.log(result.ok ? 'PASS: Ollama → AI SDK → Mastra generate returned valid JSON locally.' : 'FAIL');
     return result.ok;
-  } catch (error) { console.log(modelFailure(error)); return false; }
+  } catch (error) { console.log(`FAIL: ${modelFailure(error, 'see "Optional Studio and debugging" in the README')}`); return false; }
 }

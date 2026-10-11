@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
+import { z } from 'zod';
 import { Coordinates, Preferences, clean, type Preferences as PreferenceType } from './domain.js';
 import { highlightAnswer, progressNote, useStyle } from './terminal.js';
 
@@ -24,6 +25,27 @@ An interactive terminal shows a brief progress note and a bold answer line;
 NO_COLOR=1 turns the bold off. Piped output and --json are never styled.
 Times display in Asia/Kolkata. Default coordinates are approximate
 Gwalior city centre, not your home. No package has been published.`;
+
+// Flags by preference field, with the unit shown in error messages.
+const FLAGS: Record<string, [flag: string, unit: string]> = {
+  maxTemp: ['--max-temp', '°C'], maxAqi: ['--max-aqi', ''], maxUv: ['--max-uv', ''], maxRain: ['--max-rain', '%'],
+  radiusKm: ['--radius', ' km'], period: ['--period', ''], intent: ['--intent', ' characters'], lat: ['--lat', ''], lon: ['--lon', ''],
+};
+// A mistyped preference gets one plain sentence per problem. The limits come from the
+// validation issue itself, so the wording cannot drift from the schema.
+function typed<T>(parse: () => T): T {
+  try { return parse(); } catch (error) {
+    if (!(error instanceof z.ZodError)) throw error;
+    throw new Error(error.issues.map(issue => {
+      const [flag, unit] = FLAGS[String(issue.path.at(-1))] ?? ['A preference', ''];
+      if (issue.code === 'too_big') return `${flag} must be at most ${issue.maximum}${unit}.`;
+      if (issue.code === 'too_small') return `${flag} must be at least ${issue.minimum}${unit}.`;
+      if (issue.code === 'invalid_value') return `${flag} must be one of: ${issue.values.join(', ')}.`;
+      if (issue.code === 'invalid_type') return `${flag} must be a number.`;
+      return `${flag} is not valid.`;
+    }).join(' '));
+  }
+}
 
 async function main() {
   const { values, positionals } = parseArgs({ allowPositionals: true, options: {
@@ -76,9 +98,11 @@ async function main() {
         if (values.period !== undefined) patch.period = values.period;
         if (values.intent !== undefined) patch.intent = values.intent;
         if (Boolean(values.lat) !== Boolean(values.lon)) throw new Error('Set --lat and --lon together.');
-        if (values.lat !== undefined && values.lon !== undefined) patch.start = Coordinates.parse({ lat: Number(values.lat), lon: Number(values.lon) });
+        if (values.lat !== undefined && values.lon !== undefined) patch.start = typed(() => Coordinates.parse({ lat: Number(values.lat), lon: Number(values.lon) }));
         if (!Object.keys(patch).length) throw new Error('Supply at least one preference to save.');
-        const validated = Preferences.parse({ ...await memory.read(), ...patch });
+        // Saved memory is read outside typed(): corrupt memory must still fail as it did before.
+        const saved = await memory.read();
+        const validated = typed(() => Preferences.parse({ ...saved, ...patch }));
         preferences = await memory.save(validated);
       } else if (positionals[1] === 'reset') preferences = await memory.reset();
       else preferences = await memory.read();

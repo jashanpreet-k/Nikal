@@ -68,11 +68,13 @@ export function createNikalAgent(preferences: PreferenceMemory) {
   });
 }
 
-export function modelFailure(error: unknown): string {
+export function modelFailure(error: unknown, next = 'run nikal doctor'): string {
   const message = error instanceof Error ? error.message : '';
+  const cause = String((error as { cause?: { code?: unknown } } | null)?.cause?.code ?? '');
   if (/timeout|aborted/i.test(message)) return 'Ollama timed out; try a longer model timeout or a warmer model.';
   if (/unknown candidate|exceeded|grounded|JSON|Unexpected|Zod|Invalid input/i.test(message)) return 'Local model output failed candidate validation.';
   if (/HTTP 404|not found/i.test(message)) return 'Local model is missing; pull the configured model.';
   if (/remote|Non-local/i.test(message)) return 'Local-only model check failed.';
-  return 'Local model unavailable or invalid output; run nikal doctor.';
+  if (message === 'fetch failed' || /ECONNREFUSED|ECONNRESET|EHOSTUNREACH|ENOTFOUND/.test(`${cause} ${message}`)) return 'Ollama is not reachable; start the Ollama app or run ollama serve, then try again.';
+  return `Local model unavailable or invalid output; ${next}.`;
 }
