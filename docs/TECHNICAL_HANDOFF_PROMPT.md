@@ -4,7 +4,7 @@ Copy the text below into Claude. This describes the implementation already built
 
 ---
 
-We have built **Nikal — Your cue to step outside** in `/Users/jashanpreetkaur/Desktop/Nikal`. Please understand the existing project, its technical design, verified results and aim from this context. Do not assume unverified integrations succeeded or that we have already published a submission.
+We have built **Nikal — Your cue to step outside** in the cloned `Nikal` repository. Please understand the existing project, its technical design, verified results and aim from this context. This historical technical handoff predates later evidence. The DEV post is published; current results are in [VERIFICATION.md](VERIFICATION.md) and [EVIDENCE_EXCERPT.md](EVIDENCE_EXCERPT.md). Earlier “not run” and test totals below describe their own earlier continuation, not current status.
 
 ## 1. What we built and what we are targeting
 
@@ -12,7 +12,7 @@ Nikal means “go out” in Hindi. The human problem is: **Should I step outside
 
 This is a TypeScript CLI, with optional Mastra Studio for inspecting the workflow. There is no big frontend, hosted inference service, route planner or deployment. It retrieves forecast weather/AQI, mapped parks/gardens/paths, and optionally source-corroborated outdoor events. It remembers comfort preferences locally and uses a local model to choose among eligible candidates.
 
-Our primary award target is **Best Use of Mastra — $100 USD** in the **DEV Hacktoberfest Open-Source AI Challenge, Week 1: Touch Grass**. Agents, tools, five domain stages plus an explicit parallel-output join, and persistent working memory are implemented. Optional transactional preference chat is implemented and mock-tested, not real-model verified. The original secondary target was **Best Use of SerpApi — $100 USD**, but we will include that category in the submission only after an actual keyed live run succeeds. The current DEV draft lists Mastra only.
+Our primary award target is **Best Use of Mastra — $100 USD** in the **DEV Hacktoberfest Open-Source AI Challenge, Week 1: Touch Grass**. Agents, tools, five domain stages plus an explicit parallel-output join, and persistent working memory are implemented. Actual local Qwen chat and separate-process persistence are recorded. **Best Use of SerpApi — $100 USD** is the secondary entry. For the separately user-reported 10 October run: Search returned 3 source-linked leads; the model selected none. No event was corroborated, so the card said “No verified event found.” [EVIDENCE_EXCERPT.md](EVIDENCE_EXCERPT.md) preserves supplied titles/URLs, not independent source verification. The undated demo log has its own counts and no lead titles/URLs.
 
 The official deadline is **11 October 2026, 11:59 PM PDT**, equivalent to **12 October 2026, 12:29 PM IST**. Writing quality carries the most judging weight, followed by relevance, creativity and technical execution; partner technology is also assessed for its category. These are targets, not claims that we have won. The official source is [the challenge page](https://dev.to/challenges/hacktoberfest-week1-2026-10-05), checked on 10 October. A submission can win once per challenge even if eligible for multiple categories.
 
@@ -239,7 +239,7 @@ Nikal source is MIT licensed; dependencies and model weights retain their own li
 
 ## 12. What actually passed, versus mocks and limitations
 
-Use `docs/VERIFICATION.md` as the dated evidence source. The newest continuation on **10 October 2026** passed the complete check after each task: 47 tests after lead display, 51 after query configuration, 58 after parallel retrieval and 72 after chat; an additional genuine-saved-memory/search privacy regression brought the total to **73 passing tests**, with typecheck/build and zero failures/skips. The original 41-test coverage still passes. New API/model responses are mocks; Mastra workflow and SQLite are genuine. No live keyed SerpApi, real-model chat, fresh Ollama inference or live retrieval was run in this continuation. `docs/SERPAPI_EVIDENCE.md` is an empty template, not recorded evidence. Do not infer real-model chat compatibility from previous JSON or single-tool doctor results.
+Use `docs/VERIFICATION.md` as the dated evidence source. The earlier continuation on **10 October 2026** passed the complete check after each task: 47 tests after lead display, 51 after query configuration, 58 after parallel retrieval and 72 after chat; an additional genuine-saved-memory/search privacy regression brought the total to **73 passing tests**, with typecheck/build and zero failures/skips. The original 41-test coverage still passes. New API/model responses are mocks; Mastra workflow and SQLite are genuine. No live keyed SerpApi, real-model chat, fresh Ollama inference or live retrieval was run in this continuation. `docs/SERPAPI_EVIDENCE.md` is an empty template, not recorded evidence. Do not infer real-model chat compatibility from previous JSON or single-tool doctor results.
 
 The earlier actual-model/API checks are **10 October 2026, about 9:44 PM IST**, after rollover/resilience but before parallel/chat:
 
@@ -272,7 +272,7 @@ Historical dependency audit reported 14 affected entries (nine moderate/five hig
 For a short demo, first show genuine local compatibility, then the isolated model-and-memory fixture, then a separate live retrieval. `npm link` already worked; use `node dist/cli.js` instead of `nikal` if needed.
 
 ```zsh
-cd /Users/jashanpreetkaur/Desktop/Nikal
+cd Nikal  # from the parent directory of your clone
 NIKAL_SKIP_DOTENV=1 npm run check
 
 (
@@ -302,9 +302,9 @@ For optional keyed verification, the user should edit the existing workspace `.e
 
 The remaining user-owned submission items are a public repository link, real recording link, actual outdoor photo and honest outdoor experience, and actual teammate DEV handles (or an honest solo attribution). Personally verified curated entries are optional recovery evidence during Overpass outages. Fresh mapped-place success still depends on public mirror availability. Optional SerpApi prize inclusion depends on real keyed evidence; a diagnostic PASS alone does not verify an event.
 
-Optional real-model chat remains a user-run compatibility check: follow the isolated profile commands in README/SETUP, show persisted `prefs show` before and after, and record the actual result before claiming success. The SerpApi evidence template must stay empty until a real keyed run supplies its date/query/doctor result/lead count/corroboration count/notes.
+For repeating the already recorded real-model chat with your own outcome: follow the isolated profile commands in README/SETUP, show persisted `prefs show` before and after, and record the actual result before claiming success. The current SerpApi report contains separate recorded runs; unknown queries and execution dates remain blank; lead titles/URLs are recorded only for the separately user-reported 10 October run.
 
-The DEV draft already follows the official headings: What I Built, Demo, Code, How I Built It, Why Does Open Innovation Matter?, optional My Agent Session, and Prize Categories. It has explicit Limitations, required tags `devchallenge, hf26challenge`, correct privacy wording and all real-experience/link placeholders. README has an empty “Commits after the deadline” note section. Nothing has been published and git history has not been altered.
+The DEV draft already follows the official headings: What I Built, Demo, Code, How I Built It, Why Does Open Innovation Matter?, optional My Agent Session, and Prize Categories. It has explicit Limitations, required tags `devchallenge, hf26challenge`, correct privacy wording and all real-experience/link placeholders. README has an empty “Commits after the deadline” note section. At the time of that earlier report, nothing had been published. The DEV post and GitHub repository are now public; this preparation pass changes neither.
 
 ## 14. Constraints for discussing or continuing this project
 

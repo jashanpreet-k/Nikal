@@ -4,6 +4,8 @@ Nikal means “go out” in Hindi. This small terminal agent asks: **Should I st
 
 Built for Gwalior, Madhya Pradesh, India, for [DEV's Touch Grass challenge](https://dev.to/challenges/hacktoberfest-week1-2026-10-05). In an Indian city, heat and air quality can make “just go outside” poor advice at the wrong hour.
 
+Started on 10 October 2026. Built on 10 October 2026, with documentation and demo preparation on 11 October 2026. Solo: @jashanpreet_kaur_917e774f, with AI coding assistance; no human teammates.
+
 ## Start on macOS / zsh
 
 Node **24.14.0** was detected and tested; Mastra requires **≥22.13.0**. Exact commands and the distinction between executed and remaining steps are in [SETUP.md](SETUP.md).
@@ -64,7 +66,7 @@ The documentation-sync check on **11 October 2026** passed type-checking, build 
 
 Actual Qwen chat called `savePreferences`, completed successfully, and persisted **30°C + morning**; a separate CLI process retrieved those values. The recorded synthetic-facts demo used real Qwen selection on attempt 1: **5 PM → chat saves 30°C/morning → separate-process retrieval → 7 AM**.
 
-The latest reviewed live demo logs show **local-ai on attempt 1**, live weather/AQI and live Overpass, with **11 October, 7 AM IST: 23.9°C and forecast US AQI 70**. SerpApi search was live: **three unconfirmed leads, zero corroborated events, selected lead ID null**. Earlier user-reported runs had unavailable places or SerpApi HTTP 401; they remain separate historical entries. See [docs/VERIFICATION.md](docs/VERIFICATION.md) for agent-executed checks, user-reported runs and reviewed demo logs.
+The latest reviewed live demo logs show **local-ai on attempt 1**, live weather/AQI and live Overpass, with **11 October, 7 AM IST: 23.9°C and forecast US AQI 70**. For that undated demo run, SerpApi search was live. Search returned 3 leads; their titles and URLs are not recorded in the public evidence. The model selected none (`selectedLeadId: null`). No event was corroborated, so the card said “No verified event found.” See the [curated evidence excerpt](docs/EVIDENCE_EXCERPT.md). Earlier user-reported runs had unavailable places or SerpApi HTTP 401; they remain separate historical entries. See [docs/VERIFICATION.md](docs/VERIFICATION.md) for agent-executed checks, user-reported runs and reviewed demo logs.
 
 ## Remember preferences across processes
 
@@ -107,7 +109,7 @@ This launches separate CLI processes with an isolated SQLite database, first sel
 )
 ```
 
-Each `nikal` invocation is a new process; the fresh directory isolates memory and caches. `NIKAL_SKIP_DOTENV=1` prevents opening `.env`, and blank coordinate variables retain the approximate development-centre label. The subshell leaves ordinary shell settings intact. The recorded real-model fixture demo selected **5 PM + Demo Quiet Garden**, then **7 AM + Demo Green Park** after chat saved 30°C/morning; both were `local-ai`, one attempt. These are synthetic destinations. Exact model choices may vary. If a recommendation stays the same, inspect `prefs show` and the passing candidates: the same hour may satisfy both profiles.
+Each `nikal` invocation is a new process; the fresh directory isolates memory and caches. `NIKAL_SKIP_DOTENV=1` prevents opening `.env`, and blank coordinate variables retain the approximate development-centre label. The subshell leaves ordinary shell settings intact. The exact chat message is not recorded in the demo logs; the command above is a reproduction instruction, not a transcript. The recorded real-model fixture demo selected **5 PM + Demo Quiet Garden**, then **7 AM + Demo Green Park** after chat saved 30°C/morning; both were `local-ai`, one attempt. These are synthetic destinations. Exact model choices may vary. If a recommendation stays the same, inspect `prefs show` and the passing candidates: the same hour may satisfy both profiles.
 
 For a fresh live retrieval recording with defaults, use another isolated profile:
 
@@ -149,9 +151,11 @@ The tool validates and stages changes in a per-run object, responding **“stage
 
 For optional events, open the **existing workspace `.env` in your local editor**, fill `SERPAPI_KEY` privately and save. Run `nikal doctor --events` yourself from the project directory without the skip flag so the app can load that file. Keep the key out of chat, recordings and source control; preserve existing settings. The diagnostic forces **one fresh query**, bypasses the search cache and prints PASS/FAIL without the key. PASS proves search succeeded, **not** that an event source page was verified. A regular live run separately checks up to three source pages and links every corroborated event.
 
-All automated and environment-only verification uses `NIKAL_SKIP_DOTENV=1`, which prevents opening `.env`. Earlier environment-only diagnostics skipped because no key was present. A later recorded keyed diagnostic passed; a separately recorded live workflow retrieved **three unconfirmed leads, zero corroborated events and no selected lead**. The workflow's `live` provenance excludes Nikal's local search cache, not SerpApi's server cache. Successful search is verified; an actual corroborated event and a non-null real-model lead selection are not. Commands above also skip dotenv and use a process-environment key only if configured privately.
+All automated and environment-only verification uses `NIKAL_SKIP_DOTENV=1`, which prevents opening `.env`. Earlier environment-only diagnostics skipped because no key was present. A later recorded keyed diagnostic passed; a separately recorded, undated demo workflow returned 3 leads; their titles and URLs are not recorded in the public evidence. The model selected none; no event was corroborated, so the card said “No verified event found.” See [docs/EVIDENCE_EXCERPT.md](docs/EVIDENCE_EXCERPT.md). The workflow's `live` provenance excludes Nikal's local search cache, not SerpApi's server cache. Successful search is verified; an actual corroborated event and a non-null real-model lead selection are not. Commands above also skip dotenv and use a process-environment key only if configured privately.
 
 Set optional `NIKAL_EVENT_QUERY` to general city-level activity terms. Blank/unset uses `outdoor events walks runs street markets in Gwalior this week`. The limit is **120 Unicode characters (code points)** after trimming; control/formatting characters and newlines are rejected before trimming with a clear configuration error, without echoing the value. The request always retains `location=Gwalior, Madhya Pradesh, India`; query text cannot change that parameter. Saved coordinates, intent and other memory are never automatically inserted. The six-hour local cache includes the query and IST date, never the API key. Cache hits, absent keys and skipped retrieval make zero search requests; misses make at most one. [docs/SERPAPI_EVIDENCE.md](docs/SERPAPI_EVIDENCE.md) records separate real-run evidence; unknown fields remain blank.
+
+A separate earlier run on **10 October 2026 IST**, supplied by the user as an application-output excerpt, records the actual titles and URLs of three unconfirmed leads. Search returned 3 source-linked leads; the model selected none. No event was corroborated, so the card said “No verified event found.” These links have not been independently verified; the exact query remains blank. See [docs/EVIDENCE_EXCERPT.md](docs/EVIDENCE_EXCERPT.md) and keep this run separate from the undated demo logs.
 
 ## How Mastra matters
 
@@ -269,8 +273,8 @@ Weather data: [Open-Meteo](https://open-meteo.com/), CC BY 4.0. Air-quality data
 
 ## Submission materials
 
-[docs/DEV_POST_DRAFT.md](docs/DEV_POST_DRAFT.md) follows the actual challenge template and includes `devchallenge` / `hf26challenge`. [docs/DEMO.md](docs/DEMO.md) gives a short recording script. [docs/DOCS_CHECK.md](docs/DOCS_CHECK.md) records current official APIs and pinned versions.
+The local [docs/DEV_POST_DRAFT.md](docs/DEV_POST_DRAFT.md) is a prepared revision of the published post, with labelled recorded-output images and explicit statements that video and an outdoor trial are not yet available. It follows the actual challenge template and includes `devchallenge` / `hf26challenge`. [docs/DEMO.md](docs/DEMO.md) gives a short recording script. [docs/DOCS_CHECK.md](docs/DOCS_CHECK.md) records current official APIs and pinned versions.
 
-The [DEV submission](https://dev.to/jashanpreet_kaur_917e774f/nikal-in-gwalior-go-outside-needs-a-time-attached-4gpf) is published as **“Nikal: A local AI agent that remembers your comfort—and tells you to go outside”**, with `devchallenge` and `hf26challenge`. Video walkthrough to follow. An outdoor trial has not yet been completed; an actual departure time, destination, experience and photo remain to be added. Contributor attribution also needs confirmation. npm remains unpublished. The challenge deadline is **12 October 2026, 12:29 PM IST** (11 October, 11:59 PM PDT).
+The [DEV submission](https://dev.to/jashanpreet_kaur_917e774f/nikal-in-gwalior-go-outside-needs-a-time-attached-4gpf) is published as **“Nikal: A local AI agent that remembers your comfort—and tells you to go outside”**, with `devchallenge` and `hf26challenge`. Video walkthrough to follow. An outdoor trial has not yet been completed; an actual departure time, destination, experience and photo remain to be added. This is a solo submission with AI coding assistance. npm remains unpublished. The challenge deadline is **12 October 2026, 12:29 PM IST** (11 October, 11:59 PM PDT).
 
 ## Commits after the deadline
