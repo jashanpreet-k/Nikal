@@ -80,3 +80,42 @@ Recorded lead titles and source URLs:
 - [gwalior Archives - Go Heritage Runs - Run, Fun, Travel](https://www.goheritagerun.com/tag/gwalior/)
 
 Search returned 3 source-linked leads; the model selected none. No event was corroborated, so the card said “No verified event found.” The pasted subset supplies the warning and summary, not a full card; that card wording is separately supported by earlier user-supplied live-card evidence. General activity and archive links are not promoted to confirmed upcoming events. Exact query stays blank, as requested. See [EVIDENCE_EXCERPT.md](EVIDENCE_EXCERPT.md).
+
+## Why no lead verifies: offline investigation on 11 October 2026, 3:21–3:38 PM IST
+
+Run by the coding agent (Claude Code) at the author's request. **No new SerpApi request was made**: the local `.env` held no key, so nothing here is a new keyed search. Two sources were used instead.
+
+**1. The cached search response from the recorded demo run.** The isolated profile of `run-cNelX7M6` still holds the SerpApi response its live workflow fetched. Nikal only writes that cache from a workflow search, never from `doctor --events`. Replaying the stored body through Nikal's own `findEvents`, with the network replaced by the cached body and page fetches disabled, gives:
+
+- Fetched: 11 October 2026, 12:25:03 AM IST.
+- Query: `outdoor events walks runs street markets in Gwalior this week` (the default), location `Gwalior, Madhya Pradesh, India`, `gl=in`, `hl=en`, engine `google`.
+- Google returned **no `events_results` module** and 9 organic results.
+- Leads Nikal retained, in order:
+  - [Outdoor Activities in Gwalior](https://www.facebook.com/fb-answers/outdoor-activities-in-gwalior/?locale=ur_PK), a Facebook topic page.
+  - [gwalior Archives - Go Heritage Runs - Run, Fun, Travel](https://www.goheritagerun.com/tag/gwalior/), a tag archive.
+  - [Thebrightsidebazaar 1 DAYS TO GO Shopping,Food ...](https://www.instagram.com/reel/DYo9rMDs7ns/), an Instagram reel. Its search snippet names a Gwalior venue and “11th, 12th & 13th October 2026”.
+- Corroborated events: 0. Warning: “Search leads could not be confirmed on dated source pages.”
+
+This fills the query, date and lead list that the `06-live.txt` entries above leave blank. It is a replay of a stored response, so it shows what Nikal's current lead selection does with that body; the recorded run reported the same counts (3 leads, 0 corroborated, no lead selected). These leads differ from the separately user-reported 10 October run, which is a different search.
+
+**2. A live probe of public pages with Nikal's own `fetchSource` and `verifyEventPage`** (ordinary page requests, no SerpApi):
+
+| Page | JSON-LD scripts | schema.org `Event` objects | Verifies |
+| --- | --- | --- | --- |
+| `goheritagerun.com/tag/gwalior/` (a retained lead) | 1 | 0 | no |
+| `avathi.com/activity/explore-the-bustling-markets-of-gwalior/2278` (a lead in the earlier user-reported run) | 0 | 0 | no |
+| `sekhonmarathon.com` | 0 | 0 | no |
+| `townscript.com/in/gwalior/free--this-weekend` | 1 | 0 | no |
+| `allevents.in/gwalior` | 3 | 8 | no |
+
+The eight AllEvents entries are dated 16 October to 28 November 2026 and are a pool party, Garba and Dandiya, a Diwali fair, a cafe show and similar. None has an outdoor-activity word in its name, and none starts before the verifier's week ends. Facebook and Instagram pages were not probed.
+
+**Causes, in order of weight:**
+
+1. Google showed no events module for this query in Gwalior, so every lead came from organic results.
+2. Those organic results are general pages and social posts. They carry no dated `Event` markup, so they can never pass corroboration, whatever their snippet says.
+3. The verifier's “this week” is a Monday-to-Sunday IST calendar week. On Sunday 11 October it closed at midnight, about eight and a half hours after the probe. A rolling seven-day window would be more useful; this is a known limit, not changed here.
+
+The Instagram lead is the instructive case. Its snippet contains dates that fall in the current week, and Nikal still reports “No verified event found”, because a snippet is a lead and not a source page. Whether that bazaar is outdoors, open or as described was not checked.
+
+**Not done:** no alternative query was tried against SerpApi. Whether a shorter query such as `events in Gwalior this week` makes Google return an events module is untested.

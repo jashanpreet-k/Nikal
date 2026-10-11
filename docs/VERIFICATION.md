@@ -409,3 +409,65 @@ Final offline checks passed: `NIKAL_SKIP_DOTENV=1 git diff --check`; public Mark
 ## Authorized documentation publication preparation — 11 October 2026
 
 The user authorized committing/pushing only the prepared documentation and two labelled PNG files, excluding the pre-existing .gitignore change and untracked recording script, and updating the existing DEV post without a duplicate. Removed unresolved personal-story, video, outing and photo placeholders from the publishable draft. Its opening describes the Gwalior product problem; it states that video is not yet available and an outdoor trial has not yet been completed. Both recorded-output renders retain their source/date footers and the publication caption “Rendered from recorded output; not a live screenshot.” Image references use public repository URLs. Required tags, prize categories, synthetic/live distinctions, separate user-reported lead evidence and unknown queries remain intact. No new inference, retrieval API or npm/test run was made for these documentation-only edits. Final commit/publication results are confirmed separately after those actions succeed.
+
+
+## Real runs, terminal recording, Studio capture and two runtime changes — 11 October 2026, 3:17–4:07 PM IST
+
+Run by the coding agent (Claude Code) on the development laptop at the author's request. The author reviewed and approved the two runtime changes below before they were committed. Earlier entries are unchanged.
+
+### Automated gate
+
+`NIKAL_SKIP_DOTENV=1 npm run check` passed at about 3:43 PM IST, after the last source change, and again at 4:07 PM IST before commit: type-checking, production build and **106 tests, 106 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo**. Model and API cases in the suite are mocked or synthetic; storage is genuine isolated SQLite. The one new test covers the warning-formatting change.
+
+### Two runtime changes, reviewed and approved by the author
+
+- `src/card.ts`: warnings used to be joined into one string and cut at 350 characters. Each warning now prints on its own line, capped at 160 characters, at most six lines. A real take with all three Overpass mirrors down had ended a sentence with “event search skippe”. A card with one warning prints as before.
+- `src/tools/places.ts`: the per-mirror Overpass client timeout went from 8 to 15 seconds. The primary mirror was measured answering HTTP 200 in 5.7, 7.6 and 8.4 seconds, so the old limit failed on a coin flip. Worst case with all three mirrors hanging rises from about 25 to about 46 seconds.
+
+### Real-model and live-API runs — 3:20 PM IST
+
+Separate CLI processes on one fresh isolated profile, labelled city-centre coordinates, `qwen2.5:7b` through loopback Ollama. Full cards are in [EVIDENCE_EXCERPT.md](EVIDENCE_EXCERPT.md#agent-executed-runs--11-october-2026-320-pm-ist).
+
+- `nikal doctor` and `nikal doctor --tools`: both PASS.
+- `nikal --fixture`: `local-ai`, attempt 1, **5 PM** with Demo Quiet Garden, reason `cleaner-air`. Synthetic facts.
+- `nikal chat "I dislike heat above 30°C and prefer mornings."`: printed `maxTemp: 32 → 30` and `period: "any" → "morning"`.
+- `nikal prefs show`, new process: 30°C and morning, other fields unchanged.
+- `nikal --fixture`, new process: `local-ai`, attempt 1, **7 AM** with Demo Green Park, reason `cooler`. Synthetic facts.
+- `nikal`: `local-ai`, attempt 1; weather and AQI live; places live from Overpass (12 candidates); search **skipped, no key**. No hour passed for the rest of 11 October because forecast US AQI was above 100 from 4 PM. Three hours passed for 12 October; the card chose **7 AM IST, 25°C, forecast US AQI 87**, veerangna jhalkaribai koli park, approximately 1.0 km straight-line.
+
+One further live run at 3:17 PM IST used the author's ordinary profile, which held default preferences and no saved coordinates. It read that profile's memory and wrote only cache files. It is the card quoted at the top of the DEV post.
+
+These CLI runs and the recording did not set `NIKAL_SKIP_DOTENV`, so the CLI loaded the local `.env` as in normal use. It held no SerpApi key and no value from it was printed. The automated gate and Studio ran with dotenv disabled.
+
+### Terminal recording — unkeyed
+
+`docs/images/nikal-demo.gif`, with a private MP4 copy: **49.84 seconds**, 1000×540, recorded from 3:43:38 PM to 3:45:21 PM IST with VHS 0.12.1 from `scripts/demo.tape`, in its own fresh isolated profile. `terminal-1-default.png` to `terminal-4-live.png` are frames from the same take.
+
+**Waits are shortened.** Frames are hidden while each command runs, so model inference and network waits are cut. The output is unedited.
+
+Its cards show `Local AI selection` in scenes 1, 4 and 5, with no second-attempt line; 5 PM, then the chat changes, then 7 AM; and a live card with `Weather: live · AQI: live.`, `Places: live Overpass response.`, 12 October 7 AM IST, 25°C, forecast US AQI 93, and `SerpApi key absent; event search skipped.`
+
+**This recording contains no SerpApi search.** It has no leads and no selected lead, and it is not evidence for the SerpApi category.
+
+Retry disclosure: this is the seventh completed take. The first was reshot for framing. Five consecutive takes then had all three Overpass mirrors fail in the live scene. The kept take followed the timeout change above. The recorder writes to fixed paths, so earlier takes' media were overwritten.
+
+The media were inspected before commit: 17 frames sampled across the MP4, 6 from the GIF, and every PNG. All are readable and show no key, username, file path or coordinates. A string scan of the files found no embedded names, paths or credentials.
+
+### Mastra Studio capture
+
+`docs/images/studio-workflow-run.png` is a headless-Chrome capture of the real Studio page at 3:33 PM IST after ticking **Fixture** and pressing **Run**, on an isolated profile with dotenv disabled. The run's own result: `success`, `local-ai`, attempt 1, synthetic facts, 5 PM with Demo Quiet Garden; `agentDecides` 2.52 seconds. `studio-workflow-graph.png` is a crop of the same capture.
+
+### Separate, older keyed SerpApi evidence
+
+The only keyed SerpApi workflow evidence remains the earlier demo log `06-live.txt` from `run-cNelX7M6`: live search, **3 unconfirmed leads, 0 corroborated events, no lead selected**. That is a different run from the recording above, made before it and with a key entered privately by the author.
+
+**No new SerpApi request was made on this date.** The search response cached by that earlier run was replayed offline through Nikal's lead selection. It shows the fetch time (11 October, 12:25 AM IST), the default query, no `events_results` module and the three retained leads. A probe of public pages with Nikal's own verifier found no dated `Event` markup on the lead pages. Details are in [SERPAPI_EVIDENCE.md](SERPAPI_EVIDENCE.md#why-no-lead-verifies-offline-investigation-on-11-october-2026-321338-pm-ist).
+
+### Not done
+
+- `llama3.1:8b` remains untested. Its download was started and cancelled partway.
+- No alternative SerpApi query was tried.
+- The agent did not edit the published DEV post.
+- An outdoor trial, photo and account of it remain with the author.
+
+VHS and ttyd were installed through Homebrew for the recording. A headless-Chrome driver was installed in a temporary directory outside the repository for the Studio capture.

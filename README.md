@@ -4,6 +4,10 @@ Nikal means “go out” in Hindi. This small terminal agent asks: **Should I st
 
 Built for Gwalior, Madhya Pradesh, India, for [DEV's Touch Grass challenge](https://dev.to/challenges/hacktoberfest-week1-2026-10-05). In an Indian city, heat and air quality can make “just go outside” poor advice at the wrong hour.
 
+![Terminal recording of five real Nikal runs](docs/images/nikal-demo.gif)
+
+*Real runs recorded with [VHS](https://github.com/charmbracelet/vhs) from [scripts/demo.tape](scripts/demo.tape). Frames are hidden while each command works, so model and network waits are cut; the output is unedited.*
+
 Started on 10 October 2026. Built on 10 October 2026, with documentation and demo preparation on 11 October 2026. Solo: @jashanpreet_kaur_917e774f, with AI coding assistance; no human teammates.
 
 ## Start on macOS / zsh
@@ -62,11 +66,13 @@ Close this tab. Go outside.
 
 Nikal first evaluates all remaining daylight hours today. If none passes the saved comfort filters, it evaluates the whole next IST day and explicitly says **“Nothing suitable left today. Tomorrow … looks best.”** This deliberately extends the original 12-hour horizon; an early-morning run can also consider a late-today window more than 12 hours away. If both days lack qualifying data, the card says **“No suitable daylight window today or tomorrow.”** The model is skipped when no hour qualifies or a necessary forecast API fails.
 
-The documentation-sync check on **11 October 2026** passed type-checking, build and **105 tests**, with zero failures or skips. Automated model/API payloads are mocked or synthetic; persistence uses genuine SQLite. These checks are separate from actual Qwen inference and live API evidence.
+The latest check on **11 October 2026** passed type-checking, build and **106 tests**, with zero failures or skips. Automated model/API payloads are mocked or synthetic; persistence uses genuine SQLite. These checks are separate from actual Qwen inference and live API evidence.
 
 Actual Qwen chat called `savePreferences`, completed successfully, and persisted **30°C + morning**; a separate CLI process retrieved those values. The recorded synthetic-facts demo used real Qwen selection on attempt 1: **5 PM → chat saves 30°C/morning → separate-process retrieval → 7 AM**.
 
-The latest reviewed live demo logs show **local-ai on attempt 1**, live weather/AQI and live Overpass, with **11 October, 7 AM IST: 23.9°C and forecast US AQI 70**. For that undated demo run, SerpApi search was live. Search returned 3 leads; their titles and URLs are not recorded in the public evidence. The model selected none (`selectedLeadId: null`). No event was corroborated, so the card said “No verified event found.” See the [curated evidence excerpt](docs/EVIDENCE_EXCERPT.md). Earlier user-reported runs had unavailable places or SerpApi HTTP 401; they remain separate historical entries. See [docs/VERIFICATION.md](docs/VERIFICATION.md) for agent-executed checks, user-reported runs and reviewed demo logs.
+On **11 October 2026 at 3:20 PM IST** the whole sequence was run again in a fresh isolated profile: `doctor` and `doctor --tools` passed, real Qwen picked **5 PM**, chat saved **30°C + morning**, a new process read them back, and real Qwen then picked **7 AM**, all on attempt 1. The live card that followed found no passing hour left that day, because forecast US AQI was above 100 from 4 PM, and recommended **12 October, 7 AM IST** with a live Overpass park. No SerpApi key was configured for that run, so event search was skipped. Full cards are in the [curated evidence excerpt](docs/EVIDENCE_EXCERPT.md).
+
+Earlier reviewed live demo logs show **local-ai on attempt 1**, live weather/AQI and live Overpass, with **11 October, 7 AM IST: 23.9°C and forecast US AQI 70**. For that undated demo run, SerpApi search was live. Search returned 3 leads; their titles and URLs are not recorded in the public evidence. The model selected none (`selectedLeadId: null`). No event was corroborated, so the card said “No verified event found.” See the [curated evidence excerpt](docs/EVIDENCE_EXCERPT.md). Earlier user-reported runs had unavailable places or SerpApi HTTP 401; they remain separate historical entries. See [docs/VERIFICATION.md](docs/VERIFICATION.md) for agent-executed checks, user-reported runs and reviewed demo logs.
 
 ## Remember preferences across processes
 
@@ -259,7 +265,7 @@ NIKAL_SKIP_DOTENV=1 npm run demo:memory
 NIKAL_SKIP_DOTENV=1 npm pack --dry-run
 ```
 
-The **105 passing tests** cover timestamp joins, rollover, model/lead-ID validation, bounded repair, Overpass recovery, event corroboration, configurable-query privacy/cache behavior, parallel retrieval and transactional chat commit/discard behavior. Model/API responses in automated tests are mocks or synthetic inputs; persistence uses genuine SQLite and separate-process fixtures. Actual Qwen chat/selection and recorded live retrieval are documented separately. See the verification report for historical dependency advisories; no destructive `npm audit fix --force` downgrade was applied.
+The **106 passing tests** cover timestamp joins, rollover, model/lead-ID validation, bounded repair, Overpass recovery, event corroboration, configurable-query privacy/cache behavior, parallel retrieval and transactional chat commit/discard behavior. Model/API responses in automated tests are mocks or synthetic inputs; persistence uses genuine SQLite and separate-process fixtures. Actual Qwen chat/selection and recorded live retrieval are documented separately. See the verification report for historical dependency advisories; no destructive `npm audit fix --force` downgrade was applied.
 
 ## Attribution and licenses
 
@@ -273,8 +279,8 @@ Weather data: [Open-Meteo](https://open-meteo.com/), CC BY 4.0. Air-quality data
 
 ## Submission materials
 
-The local [docs/DEV_POST_DRAFT.md](docs/DEV_POST_DRAFT.md) is a prepared revision of the published post, with labelled recorded-output images and explicit statements that video and an outdoor trial are not yet available. It follows the actual challenge template and includes `devchallenge` / `hf26challenge`. [docs/DEMO.md](docs/DEMO.md) gives a short recording script. [docs/DOCS_CHECK.md](docs/DOCS_CHECK.md) records current official APIs and pinned versions.
+[docs/DEV_POST_DRAFT.md](docs/DEV_POST_DRAFT.md) is the current text of the DEV post. It follows the actual challenge template and carries `devchallenge` / `hf26challenge`. Its media are real captures in [docs/images/](docs/images/): the terminal recording and four terminal screenshots produced by [scripts/demo.tape](scripts/demo.tape), and a Mastra Studio screenshot of a completed workflow run. The two older `recorded-*.png` files are renders of log text, not screenshots. [docs/DEMO.md](docs/DEMO.md) explains how to reproduce the recording. [docs/DOCS_CHECK.md](docs/DOCS_CHECK.md) records the official APIs and pinned versions checked before implementation.
 
-The [DEV submission](https://dev.to/jashanpreet_kaur_917e774f/nikal-in-gwalior-go-outside-needs-a-time-attached-4gpf) is published as **“Nikal: A local AI agent that remembers your comfort—and tells you to go outside”**, with `devchallenge` and `hf26challenge`. Video walkthrough to follow. An outdoor trial has not yet been completed; an actual departure time, destination, experience and photo remain to be added. This is a solo submission with AI coding assistance. npm remains unpublished. The challenge deadline is **12 October 2026, 12:29 PM IST** (11 October, 11:59 PM PDT).
+The [DEV submission](https://dev.to/jashanpreet_kaur_917e774f/nikal-in-gwalior-go-outside-needs-a-time-attached-4gpf) is published as **“Nikal: A local AI agent that remembers your comfort—and tells you to go outside”**. An outdoor trial has not yet been completed; an actual departure time, destination, experience and photo remain to be added. This is a solo submission with AI coding assistance. npm remains unpublished. The challenge deadline is **12 October 2026, 12:29 PM IST** (11 October, 11:59 PM PDT).
 
 ## Commits after the deadline
