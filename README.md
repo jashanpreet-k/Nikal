@@ -9,7 +9,8 @@ Built for Gwalior, Madhya Pradesh, India, for [DEV's Touch Grass challenge](http
 Node **24.14.0** was detected and tested; Mastra requires **≥22.13.0**. Exact commands and the distinction between executed and remaining steps are in [SETUP.md](SETUP.md).
 
 ```zsh
-cd /Users/jashanpreetkaur/Desktop/Nikal
+git clone https://github.com/jashanpreet-k/Nikal.git
+cd Nikal
 npm ci
 cp .env.example .env       # first setup only; preserve an existing key/config
 NIKAL_SKIP_DOTENV=1 npm run check
@@ -32,7 +33,7 @@ nikal doctor --events       # optional: one fresh keyed search, or an explicit s
 nikal
 ```
 
-`npm link` makes the package's `nikal` bin available locally. **Bare `npx nikal` requires publishing this package to npm** and is not a supported installation instruction yet. No package or DEV post has been published. `node dist/cli.js` is the equivalent if you prefer not to link globally.
+`npm link` makes the package's `nikal` bin available locally. **Bare `npx nikal` requires publishing this package to npm** and is not a supported installation instruction yet. The npm package is unpublished. The [DEV submission](https://dev.to/jashanpreet_kaur_917e774f/nikal-in-gwalior-go-outside-needs-a-time-attached-4gpf) is published. `node dist/cli.js` is the equivalent if you prefer not to link globally.
 
 ## One card, with an honest origin
 
@@ -59,7 +60,11 @@ Close this tab. Go outside.
 
 Nikal first evaluates all remaining daylight hours today. If none passes the saved comfort filters, it evaluates the whole next IST day and explicitly says **“Nothing suitable left today. Tomorrow … looks best.”** This deliberately extends the original 12-hour horizon; an early-morning run can also consider a late-today window more than 12 hours away. If both days lack qualifying data, the card says **“No suitable daylight window today or tomorrow.”** The model is skipped when no hour qualifies or a necessary forecast API fails.
 
-The latest continuation on **10 October 2026** passed type-checking, build and **73 tests**. New chat/model and retrieval scenarios are mocked; memory uses real SQLite. **Real-model chat and live keyed SerpApi were not run.** Earlier actual Qwen JSON generation and fixture selection passed: **5 PM + Demo Quiet Garden**, `cleaner-air`, one model attempt. A separate earlier real retrieval at **9:44:56 PM IST** fetched fresh weather/AQI and recommended **tomorrow, 11 October, 7 AM: 23.9°C and US AQI 70**. That run used `--no-model` and was visibly deterministic. All three Overpass mirrors failed (504, 8-second timeout, 504), so the empty-cache/empty-curated profile showed unavailable places. No destinations were invented. These actual model/API checks predate the parallel/chat continuation. See [docs/VERIFICATION.md](docs/VERIFICATION.md) for dated evidence.
+The documentation-sync check on **11 October 2026** passed type-checking, build and **105 tests**, with zero failures or skips. Automated model/API payloads are mocked or synthetic; persistence uses genuine SQLite. These checks are separate from actual Qwen inference and live API evidence.
+
+Actual Qwen chat called `savePreferences`, completed successfully, and persisted **30°C + morning**; a separate CLI process retrieved those values. The recorded synthetic-facts demo used real Qwen selection on attempt 1: **5 PM → chat saves 30°C/morning → separate-process retrieval → 7 AM**.
+
+The latest reviewed live demo logs show **local-ai on attempt 1**, live weather/AQI and live Overpass, with **11 October, 7 AM IST: 23.9°C and forecast US AQI 70**. SerpApi search was live: **three unconfirmed leads, zero corroborated events, selected lead ID null**. Earlier user-reported runs had unavailable places or SerpApi HTTP 401; they remain separate historical entries. See [docs/VERIFICATION.md](docs/VERIFICATION.md) for agent-executed checks, user-reported runs and reviewed demo logs.
 
 ## Remember preferences across processes
 
@@ -96,13 +101,13 @@ This launches separate CLI processes with an isolated SQLite database, first sel
   export NIKAL_LAT='' NIKAL_LON=''
   export OLLAMA_MODEL=qwen2.5:7b OLLAMA_BASE_URL=http://localhost:11434/v1
   nikal --fixture
-  nikal prefs set --max-temp 30 --period morning
+  nikal chat "I dislike heat above 30°C and prefer mornings."
   nikal prefs show
   nikal --fixture
 )
 ```
 
-Each `nikal` invocation is a new process; the fresh directory isolates memory and caches. `NIKAL_SKIP_DOTENV=1` prevents opening `.env`, and blank coordinate variables retain the approximate development-centre label. The subshell leaves your ordinary shell settings intact. An earlier verified real-model memory run chose **5 PM + Demo Quiet Garden**, then **7 AM + Demo Green Park** after saving 30°C/mornings, both with `mode: local-ai` and one attempt. That historical cross-process model run was not repeated in the latest checks. These are synthetic destinations. Exact model choices may vary. If a recommendation stays the same, inspect `prefs show` and the passing candidates: a choice may satisfy both profiles, so unchanged output alone does not mean memory failed.
+Each `nikal` invocation is a new process; the fresh directory isolates memory and caches. `NIKAL_SKIP_DOTENV=1` prevents opening `.env`, and blank coordinate variables retain the approximate development-centre label. The subshell leaves ordinary shell settings intact. The recorded real-model fixture demo selected **5 PM + Demo Quiet Garden**, then **7 AM + Demo Green Park** after chat saved 30°C/morning; both were `local-ai`, one attempt. These are synthetic destinations. Exact model choices may vary. If a recommendation stays the same, inspect `prefs show` and the passing candidates: the same hour may satisfy both profiles.
 
 For a fresh live retrieval recording with defaults, use another isolated profile:
 
@@ -120,7 +125,7 @@ This tests real API retrieval, separately from model inference. Do not replace a
 
 ## Optional one-shot preference chat
 
-`nikal chat "<message>"` creates a separate local agent with only `readPreferences` and `savePreferences`. It has no retrieval tools. Empty/whitespace-only messages are rejected before model invocation. This command is implemented and mock-tested; **it has not been run with the real model**. Tool-call reliability on small local models can vary. Explicit `nikal prefs set` remains the reliable way to encode a specific change.
+`nikal chat "<message>"` creates a separate local agent with only `readPreferences` and `savePreferences`. It has no retrieval tools. Empty/whitespace-only messages are rejected before model invocation. This command has both mocked failure coverage and an actual local Qwen run confirming a `savePreferences` tool call, successful commit and separate-process retrieval. Tool-call reliability on small local models can vary. Explicit `nikal prefs set` remains the reliable way to encode a specific change.
 
 For your own compatibility check, isolate the profile first:
 
@@ -136,7 +141,7 @@ For your own compatibility check, isolate the profile first:
 )
 ```
 
-This is a command sequence to run, not recorded real-model evidence. `savePreferences` accepts only `maxTemp`, `maxAqi`, `maxUv`, `maxRain`, `preferredPeriod`, `radiusKm` and `intent`; `preferredPeriod` maps to the existing stored `period`. Existing ranges apply, defaults are not inserted into patches, and unknown fields/coordinates are rejected. Mastra returns a structured input-validation error for invalid tool arguments.
+The sequence above is a reproducible local check; its exact result should be inspected rather than assumed. `savePreferences` accepts only `maxTemp`, `maxAqi`, `maxUv`, `maxRain`, `preferredPeriod`, `radiusKm` and `intent`; `preferredPeriod` maps to the existing stored `period`. Existing ranges apply, defaults are not inserted into patches, and unknown fields/coordinates are rejected. Mastra returns a structured input-validation error for invalid tool arguments.
 
 The tool validates and stages changes in a per-run object, responding **“staged, not saved.”** Multiple calls merge; the last supplied value for a field wins. Only completed generation without errors, timeout or abort permits one call to the existing validated memory merge. Failed generation or persist-time validation discards every staged change. Generation uses read-only Mastra memory; the application performs the final save. The CLI prints actual persisted `old → new` values, never the model's prose or discarded patch. No tool call, failure or unchanged values prints **“No preferences changed.”** Failures also produce a diagnostic and nonzero exit. The normal recommendation agent/tools and its disabled tool calling are unchanged.
 
@@ -144,9 +149,9 @@ The tool validates and stages changes in a per-run object, responding **“stage
 
 For optional events, open the **existing workspace `.env` in your local editor**, fill `SERPAPI_KEY` privately and save. Run `nikal doctor --events` yourself from the project directory without the skip flag so the app can load that file. Keep the key out of chat, recordings and source control; preserve existing settings. The diagnostic forces **one fresh query**, bypasses the search cache and prints PASS/FAIL without the key. PASS proves search succeeded, **not** that an event source page was verified. A regular live run separately checks up to three source pages and links every corroborated event.
 
-All automated and environment-only verification uses `NIKAL_SKIP_DOTENV=1`. That makes the app read configuration only from the process environment without opening `.env`. The latest event diagnostic printed **SKIP** because no key was present in that process environment. The file was not opened, so this is not a claim about whether your private `.env` contains a key. Live keyed search and source verification remain untested. Recording commands above also skip dotenv; they use an already configured process-environment key only, if present.
+All automated and environment-only verification uses `NIKAL_SKIP_DOTENV=1`, which prevents opening `.env`. Earlier environment-only diagnostics skipped because no key was present. A later recorded keyed diagnostic passed; a separately recorded live workflow retrieved **three unconfirmed leads, zero corroborated events and no selected lead**. The workflow's `live` provenance excludes Nikal's local search cache, not SerpApi's server cache. Successful search is verified; an actual corroborated event and a non-null real-model lead selection are not. Commands above also skip dotenv and use a process-environment key only if configured privately.
 
-Set optional `NIKAL_EVENT_QUERY` to general city-level activity terms. Blank/unset uses `outdoor events walks runs street markets in Gwalior this week`. The limit is **120 Unicode characters (code points)** after trimming; control/formatting characters and newlines are rejected before trimming with a clear configuration error, without echoing the value. The request always retains `location=Gwalior, Madhya Pradesh, India`; query text cannot change that parameter. Saved coordinates, intent and other memory are never automatically inserted. The six-hour local cache includes the query and IST date, never the API key. Cache hits, absent keys and skipped retrieval make zero search requests; misses make at most one. [docs/SERPAPI_EVIDENCE.md](docs/SERPAPI_EVIDENCE.md) is an empty template for a future real keyed run.
+Set optional `NIKAL_EVENT_QUERY` to general city-level activity terms. Blank/unset uses `outdoor events walks runs street markets in Gwalior this week`. The limit is **120 Unicode characters (code points)** after trimming; control/formatting characters and newlines are rejected before trimming with a clear configuration error, without echoing the value. The request always retains `location=Gwalior, Madhya Pradesh, India`; query text cannot change that parameter. Saved coordinates, intent and other memory are never automatically inserted. The six-hour local cache includes the query and IST date, never the API key. Cache hits, absent keys and skipped retrieval make zero search requests; misses make at most one. [docs/SERPAPI_EVIDENCE.md](docs/SERPAPI_EVIDENCE.md) records separate real-run evidence; unknown fields remain blank.
 
 ## How Mastra matters
 
@@ -189,7 +194,7 @@ Preferences use **genuine Mastra `Memory.updateWorkingMemory` / `getWorkingMemor
 | Events | SerpApi `google`, city-only query, `gl=in`, `hl=en`; `events_results` and relevant `organic_results` | Six hours, engine-specific cache, one call with no retries/pagination; absence/quota/errors keep the main recommendation working |
 | Event sources | At most three public HTTPS source pages; source JSON-LD `Event` must corroborate title, explicit date, outdoor activity and Gwalior | One hour, including unsuccessful verification; bounded size/time, no redirects or private-network destinations |
 
-SerpApi's [Google Events documentation](https://serpapi.com/google-events-api) now marks `google_events` deprecated and directs event searches to `events_results` on the [Google Search API](https://serpapi.com/search-api). Nikal uses that documented replacement and omits the retired engine's `htichips=date:week`. The default query still asks for this week; confirmed events must still pass actual source-date checks through the end of the IST week. No publication-date filter is substituted for event dates. A successful search can contain no event module. Relevant organic results can still become unconfirmed leads: cleaned title/snippet must mention Gwalior and the existing outdoor-activity terms; title and public HTTPS source must validate. Both result types share three deduplicated source checks, and source-page JSON-LD alone establishes a corroborated event/date. With zero valid leads the warning says none were found; with leads but no corroboration it reports that source dates could not be confirmed. The user reported a live response with zero leads before this parser fix; no new live run of the fix is claimed.
+SerpApi's [Google Events documentation](https://serpapi.com/google-events-api) now marks `google_events` deprecated and directs event searches to `events_results` on the [Google Search API](https://serpapi.com/search-api). Nikal uses that documented replacement and omits the retired engine's `htichips=date:week`. The default query still asks for this week; confirmed events must still pass actual source-date checks through the end of the IST week. No publication-date filter is substituted for event dates. A successful search can contain no event module. Relevant organic results can still become unconfirmed leads: cleaned title/snippet must mention Gwalior and the existing outdoor-activity terms; title and public HTTPS source must validate. Both result types share three deduplicated source checks, and source-page JSON-LD alone establishes a corroborated event/date. With zero valid leads the warning says none were found; with leads but no corroboration it reports that source dates could not be confirmed. A user-reported live response before the parser fix had zero leads. Later user-reported and reviewed live outputs retained three unconfirmed leads, without corroborating an event.
 
 Every cached-place card says **“Places from cache, fetched <date>”** in IST; expired fallback also warns that places may be outdated. Cache entries match the start coordinates and radius. If all mirrors fail and no usable cache exists, Nikal reads [data/curated-places.json](data/curated-places.json). It ships with an empty list and a `_comment` explaining the format. Add only places you have personally verified: `id` (`curated/your-slug`), `name`, `kind` (`park` or `garden`), WGS84 `lat`/`lon`, a public HTTPS `source`, and `verifiedAt` (`YYYY-MM-DD`). Invalid/future verification dates and out-of-radius places are excluded. This path is explicitly labeled **“curated fallback”**. An empty list produces **places unavailable**, never invented locations. Missing places still permits an honest time cue.
 
@@ -250,7 +255,7 @@ NIKAL_SKIP_DOTENV=1 npm run demo:memory
 NIKAL_SKIP_DOTENV=1 npm pack --dry-run
 ```
 
-The **73 passing tests** retain the original coverage and add unconfirmed-lead rendering, configurable-query validation/cache identity, parallel context preservation and branch degradation, and transactional chat staging/commit/discard behavior. Existing coverage includes timestamp joins, tomorrow rollover, preferences, model decision validation, Overpass recovery and event corroboration. Model/API responses in automated tests are mocks; persistence uses real SQLite and separate-process fixture runs. Live APIs and actual Ollama runs are recorded separately; live keyed SerpApi and real-model chat were not run in this continuation. See the verification report for historical upstream dependency advisories; no destructive `npm audit fix --force` downgrade was applied.
+The **105 passing tests** cover timestamp joins, rollover, model/lead-ID validation, bounded repair, Overpass recovery, event corroboration, configurable-query privacy/cache behavior, parallel retrieval and transactional chat commit/discard behavior. Model/API responses in automated tests are mocks or synthetic inputs; persistence uses genuine SQLite and separate-process fixtures. Actual Qwen chat/selection and recorded live retrieval are documented separately. See the verification report for historical dependency advisories; no destructive `npm audit fix --force` downgrade was applied.
 
 ## Attribution and licenses
 
@@ -260,12 +265,12 @@ Framework: [Mastra](https://mastra.ai/) supplies agents, tools, workflows and pe
 
 **Open-weight models are not synonymous with open-source software.** The selected [Qwen2.5 7B](https://ollama.com/library/qwen2.5:7b) weights use Apache-2.0. The optional [Llama 3.1 8B](https://ollama.com/library/llama3.1:8b) weights use Meta's Llama 3.1 Community License with separate conditions; they are not relabeled MIT/Apache.
 
-Weather data: [Open-Meteo](https://open-meteo.com/), CC BY 4.0. Air-quality data: Open-Meteo and the [Copernicus Atmosphere Monitoring Service (CAMS)](https://atmosphere.copernicus.eu/), including the [CAMS ENSEMBLE providers](https://confluence.ecmwf.int/display/CKB/CAMS+Regional%3A+European+air+quality+analysis+and+forecast+data+documentation) named in [Open-Meteo's attribution requirements](https://open-meteo.com/en/docs/air-quality-api). Place data: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL; retrieval through public Overpass instances. Event discovery: [SerpApi Google Events](https://serpapi.com/google-events-api), with the actual publisher's source linked on each confirmed event. Source-page content is not relicensed as Nikal code.
+Weather data: [Open-Meteo](https://open-meteo.com/), CC BY 4.0. Air-quality data: Open-Meteo and the [Copernicus Atmosphere Monitoring Service (CAMS)](https://atmosphere.copernicus.eu/), including the [CAMS ENSEMBLE providers](https://confluence.ecmwf.int/display/CKB/CAMS+Regional%3A+European+air+quality+analysis+and+forecast+data+documentation) named in [Open-Meteo's attribution requirements](https://open-meteo.com/en/docs/air-quality-api). Place data: © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), ODbL; retrieval through public Overpass instances. Event discovery: [SerpApi Google Search](https://serpapi.com/search-api), with the actual publisher's source linked on each confirmed event. Source-page content is not relicensed as Nikal code.
 
 ## Submission materials
 
 [docs/DEV_POST_DRAFT.md](docs/DEV_POST_DRAFT.md) follows the actual challenge template and includes `devchallenge` / `hf26challenge`. [docs/DEMO.md](docs/DEMO.md) gives a short recording script. [docs/DOCS_CHECK.md](docs/DOCS_CHECK.md) records current official APIs and pinned versions.
 
-Before publication: add your public code link, actual terminal recording, a real outdoor photo, and your honest “I actually used it” details. Add a SerpApi key and record a genuine search before asserting live SerpApi evidence. Deadline: **12 October 2026, 12:29 PM IST** (11 October, 11:59 PM PDT); target publishing on **11 October evening IST**. Publication remains the user's decision.
+The [DEV submission](https://dev.to/jashanpreet_kaur_917e774f/nikal-in-gwalior-go-outside-needs-a-time-attached-4gpf) is published as **“Nikal: A local AI agent that remembers your comfort—and tells you to go outside”**, with `devchallenge` and `hf26challenge`. Video walkthrough to follow. An outdoor trial has not yet been completed; an actual departure time, destination, experience and photo remain to be added. Contributor attribution also needs confirmation. npm remains unpublished. The challenge deadline is **12 October 2026, 12:29 PM IST** (11 October, 11:59 PM PDT).
 
 ## Commits after the deadline

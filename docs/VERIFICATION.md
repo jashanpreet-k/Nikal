@@ -308,3 +308,82 @@ The reported live search provenance distinguishes this retrieval from Nikal's lo
 This is user-reported real-model evidence for the optional no-selection path. It does not verify a non-null real-model lead selection or independently demonstrate the full lead list entering the model prompt. No precise run timestamp, titles, URLs, readings, time/place choice or additional results were supplied. Earlier evidence is retained as historical context.
 
 Only this documentation entry was appended. No code changes, new runs or checks were made; `.env` was not read and no key was printed.
+
+## User-reported recording: memory success and SerpApi authentication failure — 10 October 2026
+
+**Recording results supplied by the user, not independently executed or observed by this agent:**
+
+- Real local Qwen selected **5 PM** using synthetic fixture facts.
+- Preference chat saved **30°C + morning**; a separate CLI process retrieved those values.
+- The subsequent real-model fixture run selected **7 AM**. This records an actual reported preference effect across processes, with synthetic facts and real local inference; it is not a live forecast or deterministic fallback.
+- The live segment succeeded for **weather, AQI, Overpass and `local-ai`**.
+- **SerpApi failed with HTTP 401, category authentication.** This segment does not establish successful event search or source corroboration.
+
+No model attempt counts, live readings, place names, recommendation time, lead/event counts, cache provenance or precise recording timestamp were supplied for this recording; none are inferred. Earlier successful user-reported search evidence remains unchanged and applies to its own runs. The later authentication failure does not overwrite those historical results or establish that the current rotated key succeeds.
+
+Only this supplied evidence was appended. The memory demonstration was not repeated, and no new model/API run, runtime change, dependency, commit or push was made. `.env`, keys and personal memory were not read. A new live-only recording with a privately entered rotated key remains pending user-supplied output; no successful rerun is claimed.
+
+## User-supplied successful live terminal output — 11 October 2026
+
+The user supplied the completed live card and concise evidence below. This is actual terminal output reported by the user, not a new agent-executed model/API run or a reviewed video recording. The user subsequently clarified that no screen recording had been made.
+
+```json
+{"mode":"local-ai","modelAttempts":1,"leadId":null,"searchProvenance":"live","unconfirmedLeads":3,"corroboratedEvents":0,"weather":"live","aqi":"live","placesProvenance":"unavailable"}
+```
+
+The card used **approximate Gwalior city centre; not your home**, remembered **≤30°C, morning, 3 km radius, AQI ≤100**, and selected **7:00 AM IST on 11 October** with the explanation **“A morning window fits your preferences.”** It displayed **23.9°C, forecast US AQI 70, PM2.5 26.6 µg/m³, UV 0.5, rain 0%, sunset 5:53 PM**. Weather and AQI were labeled live. This reported run was local AI on its first attempt, not deterministic fallback.
+
+The search returned three unconfirmed leads, no corroborated events and no selected lead (`leadId: null`). The card said **“No verified event found.”** and **“Search leads could not be confirmed on dated source pages.”** Live search provenance excludes Nikal's local search cache for that run; it does not prove that SerpApi's server cache was bypassed or provide source-verification cache provenance. No event date, availability or confirmation is established. The earlier HTTP 401 authentication failure remains separate historical evidence.
+
+All three Overpass mirrors failed: `overpass-api.de` HTTP 504; `overpass.private.coffee` HTTP 500; `maps.mail.ru` network, timeout or invalid response. No usable cache or user-verified curated places existed, so places remained unavailable. Earlier successful mapped-place retrieval is separate evidence, not success in this run. No exact run timestamp, source titles/URLs or non-null real-model lead selection is inferred.
+
+Submission preparation inspected filenames only for recording discovery. No Nikal recording was found in the project or Desktop; the only video candidate was `bug-graveyard-demo.mp4`, whose contents were not opened. FFmpeg and FFprobe are installed. YouTube Studio browser access was denied by the permission check; no authenticated upload, video URL or completed edit is claimed. The DEV draft has the actual GitHub repository link and retains video, outdoor experience/photo and attribution placeholders. No runtime code, dependencies, commits, pushes or DEV publication were changed.
+
+FFmpeg device enumeration listed `Capture screen 0`; no frames were captured and no video was created. An environment-only key-presence check returned false without printing a value or opening `.env`. This establishes available capture tooling, not a completed screen recording or successful new keyed run. Terminal computer control was previously denied by the tool's safety policy; it was not retried or bypassed. Recording a new keyed live segment therefore still requires private key entry and a permitted terminal/recording interaction. No software was installed. The demo guide now marks older claims as historical and describes the current recording/upload status.
+
+## Runnable manual-recording preparation — 11 October 2026
+
+Created `scripts/record-demo.zsh`, using only existing Ollama and compiled Nikal CLI functionality. It requests a hidden key and checks `doctor --events` before the first recording prompt; missing-key SKIP and sanitized failures pause/exit without claiming search success. A unique isolated profile, blank coordinate overrides and `NIKAL_SKIP_DOTENV=1` preserve personal memory and avoid `.env`. Seven scenes include the exact requested preference-chat text, separate CLI processes, actual model-enabled fixture/live calls and concise run evidence. The script never substitutes deterministic preference saving for chat or forces a recommendation change.
+
+Actual checks: `zsh -n scripts/record-demo.zsh` passed; `git diff --check` passed; `git check-ignore` confirmed sample recording, isolated memory and output-log paths under `demo-recordings/` are excluded. That directory was created, with no video files. FFmpeg device listing confirms AVFoundation input support, and FFprobe is present. No screen capture, editing, actual model/API demo run, installation, commit, push or publication occurred. Previous Terminal automation denial was respected; no alternate capture route was used to bypass it. The environment-only key check reported absent without reading a value or opening `.env`.
+
+The script logs sanitized displayed output and relative scene timestamps as editing aids, not video or simulated timings. `docs/DEMO.md` documents manual terminal-region capture, preservation of originals, actual-result narration and the required caption **“Inference waits shortened; outputs are from actual runs.”** A real original recording remains required before any edited 90–120 second video can be produced. Unrelated draft work was preserved, and runtime source/dependencies remain unchanged.
+
+## Recorded demo logs reviewed during documentation sync — 11 October 2026
+
+Read the existing sanitized text outputs in the isolated demo-log set `run-cNelX7M6`; no model or retrieval API was invoked for this review. These are actual recorded CLI outputs, distinct from both automated mocks and earlier user-reported runs. The logs establish terminal results, not a reviewed screen video or upload. Script-relative scene markers do not establish wall-clock execution timestamps; absent dates, queries and source details remain unknown.
+
+### Real-model fixture and persistent memory
+
+- `02-default-fixture.txt`: **local-ai, modelAttempts 1**, synthetic weather/AQI/place/search provenance; **5 PM on the fixed 10 October fixture clock**, 31°C and US AQI 45, Demo Quiet Garden (synthetic).
+- `03-chat.txt`: persisted changes **`maxTemp: 32 → 30`** and **`period: "any" → "morning"`**. The existing real-Qwen tool-call observation above separately establishes transactional `savePreferences` execution; this text log records the persisted change output.
+- `04-preferences.txt`: a separate CLI process returned actual Mastra working memory with max temperature **30°C**, period **morning**, and other fields preserved (AQI 100, UV 5, rain 30%, radius 3 km, null start, default intent).
+- `05-saved-fixture.txt`: **local-ai, modelAttempts 1**, synthetic facts; **7 AM on the same fixture clock**, 29°C and US AQI 88, Demo Green Park (synthetic).
+
+This records an actual real-model **5 PM → chat save → independent-process retrieval → 7 AM** sequence over synthetic facts, not a live forecast, deterministic inference fallback or an outdoor trial.
+
+### Separate keyed diagnostic
+
+`events-diagnostic.txt` records **PASS: One live SerpApi Google search query succeeded (0 event results). Source pages were not verified by this diagnostic.** Its event count refers to the optional event module, not all organic leads. The log does not record the actual query, execution date/time or source corroboration; none is inferred. This diagnostic is not combined with the workflow counts below.
+
+### Separate model-enabled live workflow
+
+`06-live.txt` records approximate Gwalior city centre, not a home, and remembered **≤30°C, morning, 3 km, AQI ≤100**:
+
+```json
+{"mode":"local-ai","modelAttempts":1,"weatherProvenance":"live","aqiProvenance":"live","placesProvenance":"live","searchProvenance":"live","leadCount":3,"corroboratedEventCount":0,"selectedLeadId":null}
+```
+
+The card selected **11 October, 7 AM IST**, **23.9°C**, forecast **US AQI 70**, PM2.5 **26.6 µg/m³**, rain **0%**, UV **0.5**, sunset **5:53 PM**. Live Overpass supplied **veerangna jhalkaribai koli park**, approximately **1.0 km straight-line**, with source <https://www.openstreetmap.org/way/1561235682>. A mapped candidate does not establish access, opening hours or safety.
+
+Search yielded **three unconfirmed leads, zero corroborated events and no selected lead**. The card said “No verified event found” and “Search leads could not be confirmed on dated source pages.” Live search provenance excludes Nikal's local search cache; source-verification cache provenance and the actual query/source URLs were not captured. This later live Overpass success does not overwrite the earlier unavailable-place run or authentication failure. The 11 October recommendation date is not proof of the log's execution date.
+
+## Documentation-sync quality gate and publication status — 11 October 2026
+
+Actual **`NIKAL_SKIP_DOTENV=1 npm run check` passed** type-checking, production build and **105 tests**, with **105 pass, 0 fail, 0 cancelled, 0 skipped, 0 todo**. The test runner reported about 4.84 seconds for its test phase. Model/API cases in this suite are mocked or synthetic; storage is genuine isolated SQLite. This check is separate from the real-model fixture and live API logs reviewed above. No new retrieval API or Ollama run is claimed.
+
+The DEV post was actually published and its existing post subsequently updated, with title **“Nikal: A local AI agent that remembers your comfort—and tells you to go outside”**, required tags `devchallenge` and `hf26challenge`, and URL:
+
+<https://dev.to/jashanpreet_kaur_917e774f/nikal-in-gwalior-go-outside-needs-a-time-attached-4gpf>
+
+The authenticated browser visibly confirmed the published title and body. The post states “Video walkthrough to follow” and that an outdoor trial has not yet been completed. No duplicate post or npm publication was created. Earlier verification entries are historical and remain unchanged. README/SETUP/current DEV draft now distinguish the real chat/persistence, synthetic-facts model choices, user-reported live runs and reviewed demo logs. SerpApi evidence records separate commands with unknown fields blank. Private `.env`, keys, personal preference memory and raw provider responses were not read or printed.
