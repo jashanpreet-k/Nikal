@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
 import { Coordinates, Preferences, clean, type Preferences as PreferenceType } from './domain.js';
+import { highlightAnswer, progressNote, useStyle } from './terminal.js';
 
 const help = `Nikal — Your cue to step outside
 
@@ -19,6 +20,8 @@ const help = `Nikal — Your cue to step outside
   nikal doctor --events              One fresh SerpApi query; skips with no key
 
 Options: --data-dir /absolute/path, --max-aqi, --max-uv, --max-rain
+An interactive terminal shows a brief progress note and a bold answer line;
+NO_COLOR=1 turns the bold off. Piped output and --json are never styled.
 Times display in Asia/Kolkata. Default coordinates are approximate
 Gwalior city centre, not your home. No package has been published.`;
 
@@ -49,7 +52,10 @@ async function main() {
     const { runPreferenceChat, formatChatChanges } = await import('./chat.js');
     const memory = createPreferenceMemory();
     try {
-      const result = await runPreferenceChat(message, memory);
+      // Presentation only: a transient note on an interactive stderr while the model works.
+      const done = progressNote(process.stderr, 'Asking the local model…');
+      let result;
+      try { result = await runPreferenceChat(message, memory); } finally { done(); }
       console.log(formatChatChanges(result));
       if (result.error) { console.error(`Nikal chat: ${result.error}`); process.exitCode = 1; }
     } finally { await memory.close(); }
@@ -85,9 +91,13 @@ async function main() {
   const app = createApp();
   try {
     const run = await app.mastra.getWorkflow('nikalWorkflow').createRun();
-    const result = await run.start({ inputData: { fixture: Boolean(values.fixture), noModel: Boolean(values['no-model']) } });
+    // Presentation only: a transient note on an interactive stderr, erased before the card prints.
+    const done = progressNote(process.stderr, 'Checking conditions and choosing a time…');
+    let result;
+    try { result = await run.start({ inputData: { fixture: Boolean(values.fixture), noModel: Boolean(values['no-model']) } }); } finally { done(); }
     if (result.status !== 'success') throw new Error('Workflow failed; run nikal doctor or inspect local memory.');
-    console.log(values.json ? JSON.stringify(result.result, null, 2) : result.result.card);
+    // The card text is unchanged; an interactive stdout gets its answer line in bold.
+    console.log(values.json ? JSON.stringify(result.result, null, 2) : highlightAnswer(result.result.card, useStyle(process.stdout)));
     if (result.result.context.mode === 'unavailable') process.exitCode = 1;
   } finally { await app.preferences.close(); }
 }
