@@ -37,7 +37,7 @@ The images below reproduce recorded terminal output. They are not live captures.
 
 *Rendered from recorded output; not a live screenshot.*
 
-The memory demonstration used synthetic facts with actual local Qwen, in an isolated profile:
+**Separate CLI processes. Synthetic facts, real Qwen inference. Saved comfort preferences changed the selection from 5 PM to 7 AM.** [Recorded memory sequence](https://github.com/jashanpreet-k/Nikal/blob/e2e38e1b3639dfbdc1c3d1a94a15b8b11d95dde4/docs/EVIDENCE_EXCERPT.md#synthetic-facts-real-local-inference-and-persistence).
 
 | Step | Recorded result |
 | --- | --- |
@@ -46,7 +46,7 @@ The memory demonstration used synthetic facts with actual local Qwen, in an isol
 | Separate CLI process | Mastra working memory returned 30°C + morning. |
 | Next fixture | Qwen selected 7 AM; `local-ai`, attempt 1. |
 
-Facts were synthetic; inference and persistence were real. The chat request was not logged; these are saved changes.
+The profile was isolated. The exact chat request was not logged; its persisted changes are recorded above.
 
 The [evidence excerpt](https://github.com/jashanpreet-k/Nikal/blob/main/docs/EVIDENCE_EXCERPT.md) contains retained output. Separately, the live demo log shows local AI on attempt 1, live weather/AQI, Overpass and search: 11 October, 7 AM, 23.9°C, forecast US AQI 70. Coordinates were the approximate Gwalior development centre, not a home or nationwide test.
 
@@ -68,15 +68,27 @@ The [verification report](https://github.com/jashanpreet-k/Nikal/blob/main/docs/
 
 ## How I Built It
 
-### Mastra workflow and memory
+### Why Mastra here?
 
-Mastra tools validate retrieval. The workflow loads preferences, fetches conditions, retrieves places/leads in parallel, joins results, calls the agent and formats the card. Timestamp joins exclude missing readings.
+Mastra provides schema-typed tools, executable workflow steps with parallel retrieval and a join, and resource-scoped persistent Memory backed by LibSQL/SQLite. Nikal handles expected places/search failures independently, so either can return data when the other is unavailable. Comfort filters, source checks, staged-write commit rules and deterministic decision validation belong to Nikal's application code.
 
-Mastra Memory stores validated, resource-scoped preferences on LibSQL/SQLite. Stable IDs preserve them across processes. Chat lets the model call a save tool that validates and stages a patch. Only successful generation permits the application to validate and persist merged values; failure discards staged writes.
+**Simplified architecture**
+
+```text
+Successful recommendation path (reads saved preferences):
+Mastra Memory → Forecast → [Places + Search in parallel] → Join
+             → Comfort filters → Local Qwen agent → Deterministic validation → Card
+
+Preference chat (separate write path):
+Chat → savePreferences (stage patch) → Successful generation
+     → Validate merged preferences → Persistent Mastra Memory (LibSQL/SQLite)
+```
+
+Stable resource/thread IDs preserve preferences across CLI processes. The chat tool stages a validated patch; the application saves it only after successful generation. Failed or aborted generation discards staged writes. Normal recommendations use read-only memory and disabled model tool calls.
 
 ### Local Qwen with validation
 
-Qwen2.5:7b runs through Ollama locally. Normal recommendations disable model tool calls; retrieval follows the workflow. The model chooses supplied IDs and an explanation code. Deterministic validation rejects invented IDs and unsupported reasons, allowing one repair before labelled fallback. Displayed facts come from retrieval data.
+Comfort filters define eligible hours before Qwen2.5:7b runs through local Ollama. Qwen chooses among eligible hours and supplied places using the retrieved facts and saved preferences. It returns candidate IDs and a reason code. The workflow orchestrates retrieval. Nikal validates the chosen IDs and explanation code, allows one repair for invalid output, then uses labelled fallback. With no eligible hour, it skips inference. Card facts come from retrieval data.
 
 ### What broke
 
@@ -96,8 +108,8 @@ Inference and preference memory stay local. Open-Meteo and Overpass receive retr
 
 ## Prize Categories
 
-**Best Use of Mastra — $100 USD (primary).** Tools, parallel retrieval, validated selection, transactional chat and persistent Memory are demonstrated, including the separate-process 5 PM → 7 AM fixture sequence.
+**Best Use of Mastra — $100 USD (primary).** Schema-typed tools, a parallel workflow and local Agent connect retrieval to selection. Resource-scoped Memory persisted the chat-saved 30°C/morning preferences across separate CLI processes in the recorded fixture demo.
 
-**Best Use of SerpApi — $100 USD (secondary).** Search returned 3 source-linked leads; the model selected none. No event was corroborated, so the card said “No verified event found.” The earlier user-reported run and its unconfirmed links are in the [evidence excerpt](https://github.com/jashanpreet-k/Nikal/blob/main/docs/EVIDENCE_EXCERPT.md).
+**Best Use of SerpApi — $100 USD (secondary).** The [earlier user-reported live run](https://github.com/jashanpreet-k/Nikal/blob/main/docs/EVIDENCE_EXCERPT.md#separate-earlier-run--10-october-2026-ist-user-reported) retained three unconfirmed source-linked leads, zero corroborated events, and no model-selected lead. Nikal keeps those links separate from corroborated events.
 
 Credits: [Mastra](https://mastra.ai/), [AI SDK](https://ai-sdk.dev/), [Ollama](https://ollama.com/), [Qwen](https://github.com/QwenLM/Qwen2.5), [Open-Meteo](https://open-meteo.com/)/[CAMS](https://atmosphere.copernicus.eu/), © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright)/[Overpass](https://wiki.openstreetmap.org/wiki/Overpass_API), and [SerpApi](https://serpapi.com/search-api).
