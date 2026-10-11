@@ -44,6 +44,18 @@ test('malformed leads and URLs outside the display policy never appear', () => {
   assert.equal(output.match(/Unconfirmed lead \(/g)?.length, 1);
   assert(output.includes(lead.source));
 });
+test('each warning keeps its own complete line when several sources fail', () => {
+  // Wording copied from a real all-mirrors-down run, where a shared cap printed "search skippe".
+  const mirror = (host: string) => `${host}: OpenStreetMap Overpass: network, timeout, or invalid response`;
+  const warnings = ['SerpApi key absent; event search skipped.'];
+  const output = formatCard({ fixture: false, noModel: true, now: FIXTURE_NOW, preferences: Preferences.parse({}),
+    start: CITY_CENTRE, locationLabel: 'Development coordinates', mode: 'no-window', decision: null,
+    places: { places: [], provenance: 'unavailable', warnings: ['Places unavailable: no usable cache or user-verified curated places.',
+      mirror('overpass-api.de'), mirror('overpass.private.coffee'), mirror('maps.mail.ru')] },
+    events: { events: [], leads: [], warnings } }).split('\n');
+  for (const warning of [...warnings, mirror('overpass-api.de'), mirror('maps.mail.ru')]) assert(output.includes(warning));
+  assert.equal(output.at(-1), 'Close this tab. Go outside.');
+});
 test('hostile title is sanitized before terminal display', () => {
   const output = card({ events: [], warnings: [], leads: [{ ...lead, title: '\u001b[2J\nSynthetic\r\u0000 Walk\u202e' }] });
   assert(output.includes('Synthetic Walk —')); assert(!/[\x00-\x1f\x7f-\x9f\u202e]/.test(output.replaceAll('\n', '')));

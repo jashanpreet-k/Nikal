@@ -64,7 +64,8 @@ export function formatCard(context: Context): string {
   }
   if (context.modelError) lines.push(clean(context.modelError, 150));
   const warnings = [...(context.conditions?.warnings || []), ...(context.places?.warnings || []), ...(context.events?.warnings || [])];
-  if (warnings.length) lines.push(clean(warnings.join(' '), 350));
+  // One warning per line. A shared character cap used to cut the last warning mid-word.
+  lines.push(...warnings.slice(0, 6).map(warning => clean(warning, 160)).filter(Boolean));
   lines.push('Comfort filters, not medical guarantees. OSM access, hours and safety unverified.', 'Close this tab. Go outside.');
   return lines.join('\n');
 }

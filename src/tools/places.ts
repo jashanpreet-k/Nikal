@@ -82,12 +82,13 @@ export async function findPlaces(start: z.infer<typeof Coordinates>, radiusKm: n
 
   const failures: string[] = [];
   const backoff = options.backoff ?? (ms => new Promise(resolve => setTimeout(resolve, ms)));
-  // Three total attempts: one per mirror, with no hidden per-host retries.
+  // Three total attempts: one per mirror, with no hidden per-host retries. The client
+  // timeout was 8 s until the primary mirror was measured answering HTTP 200 in 5.7–8.4 s.
   for (const [index, endpoint] of OVERPASS_ENDPOINTS.entries()) {
     if (index > 0) await backoff(250 * index);
     try {
       const response = await http.json('OpenStreetMap Overpass', endpoint, {
-        ttl: 0, skipCache: true, timeout: 8000, retries: 0,
+        ttl: 0, skipCache: true, timeout: 15000, retries: 0,
         init: { method: 'POST', body: new URLSearchParams({ data: query }), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } },
         validate: value => { parsePlaces(value, start, radiusKm); return OverpassResponse.parse(value); },
       });
